@@ -12,9 +12,16 @@ public class Options extends HashMap<String, Object>{
 	public Options(Options options) {
 		super(options);
 	}
+	public Options() {
+	}
+
+	public Options $(String key, Object value) {
+		this.put(key, value);
+		return this;
+	}
 	public String getString(String key) {
 		Object value = this.get(key);
-		return value == null ? null : value.toString();
+		return value == null ? "" : value.toString();
 	}
 	public Options except(String...keys) {
 		Options copy = new Options(this);
@@ -28,10 +35,18 @@ public class Options extends HashMap<String, Object>{
 		if (value != null && (
 				(value instanceof Boolean && (Boolean)value) ||
 				(value instanceof Number && IntegerConversionUtil.toPrimitiveInt(value) == 1) ||
-				StringUtil.equals(value.toString(), "true") 
+				StringUtil.equals(value.toString(), "true")
 				)) {
 			return true;
 		}
 		return false;
+	}
+	public Options takeoutOptions(String key) {
+		Object obj = this.remove(key);
+		if (obj instanceof Options) {
+			return (Options)obj;
+		} else {
+			return new Options();
+		}
 	}
 }

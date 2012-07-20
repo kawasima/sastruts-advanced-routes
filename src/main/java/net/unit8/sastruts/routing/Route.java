@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.unit8.sastruts.routing.options.ConditionOptions;
-import net.unit8.sastruts.routing.options.RequirementOptions;
-
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.framework.util.tiger.CollectionsUtil;
@@ -42,11 +39,11 @@ public class Route {
 		}
 		return StringUtils.join(elements, "&");
 	}
-	
+
 	public List<String> significantKeys() {
 		if (significantKeys != null)
 			return significantKeys;
-		Set<String> sk = new HashSet<String>(); 
+		Set<String> sk = new HashSet<String>();
 		for (Segment segment : segments) {
 			if (segment.hasKey()) {
 				sk.add(segment.getKey());
@@ -55,5 +52,18 @@ public class Route {
 		sk.addAll(requirements.keySet());
 		significantKeys = new ArrayList<String>(sk);
 		return significantKeys;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder segs = new StringBuilder();
+		for (Segment s : segments) {
+			segs.append(s.toString());
+		}
+		String method = conditions.getString("method");
+		if (StringUtil.isEmpty(method))
+			method = "any";
+
+		return String.format("%-6s %-40s %s", method.toUpperCase(), segs.toString(), requirements);
 	}
 }

@@ -1,10 +1,43 @@
 package net.unit8.sastruts.routing.segment;
 
-import net.unit8.sastruts.routing.Segment;
+import org.seasar.framework.util.StringUtil;
 
-public class PathSegment extends Segment {
+import net.unit8.sastruts.routing.Options;
 
-	public PathSegment(String group, boolean optional) {
+public class PathSegment extends DynamicSegment {
+	public PathSegment(String key, Options options) {
+		super(key, options);
 	}
 
+	public String interpoationChunk() {
+		return interpolationChunk(null);
+	}
+
+	public String interpolationChunk(String valueCode) {
+		if (valueCode == null)
+			valueCode = localName();
+
+		return valueCode;
+	}
+
+	public String getDefault() {
+		return "";
+	}
+
+	public void setDefault(String path) {
+		if (StringUtil.isNotBlank(path))
+			throw new RoutingException("paths cannot have non-empty default values");
+	}
+
+	public String defaultRegexpChunk() {
+		return "(.*)";
+	}
+
+	public int numberOfCaptures() {
+		return 1;
+	}
+
+	public boolean optionalityImplied() {
+		return true;
+	}
 }

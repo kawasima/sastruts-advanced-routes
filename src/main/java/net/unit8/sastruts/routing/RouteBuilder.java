@@ -1,10 +1,12 @@
 package net.unit8.sastruts.routing;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.unit8.sastruts.routing.options.RouteOptions;
 import net.unit8.sastruts.routing.segment.ControllerSegment;
 import net.unit8.sastruts.routing.segment.DividerSegment;
 import net.unit8.sastruts.routing.segment.DynamicSegment;
@@ -12,6 +14,8 @@ import net.unit8.sastruts.routing.segment.OptionalFormatSegment;
 import net.unit8.sastruts.routing.segment.PathSegment;
 import net.unit8.sastruts.routing.segment.StaticSegment;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 
@@ -31,9 +35,9 @@ public class RouteBuilder {
 	public RouteBuilder() {
 		separators = SEPARATORS;
 		optionalSeparators = new String[]{"/"};
-		separatorRegexp = Pattern.compile("[" + Pattern.quote(StringUtils.join(SEPARATORS)) + "]");
-		nonseparatorRegexp = Pattern.compile("\\A([^" + Pattern.quote(StringUtils.join(SEPARATORS))+ "]+)");
-		intervalRegexp = Pattern.compile("(.*?)([" + Pattern.quote(StringUtils.join(SEPARATORS)) + "]|$");
+		separatorRegexp = Pattern.compile("[" + RegexpUtil.escape(StringUtils.join(SEPARATORS)) + "]");
+		nonseparatorRegexp = Pattern.compile("\\A([^" + RegexpUtil.escape(StringUtils.join(SEPARATORS))+ "]+)");
+		intervalRegexp = Pattern.compile("(.*?)([" + RegexpUtil.escape(StringUtils.join(SEPARATORS)) + "]|$)");
 	}
 
 	public LinkedList<Segment> segmentsForRoutePath(String path) {
@@ -50,49 +54,116 @@ public class RouteBuilder {
 	public Segment segmentFor(StringBuilder sb) {
 		String str = sb.toString();
 		Segment segment = null;
-		Matcher m;
+		Matcher m = null;
 		if ((m = PTN_OPTIONAL_FORMAT.matcher(str)).find()) {
 			segment = new OptionalFormatSegment();
 		} else if ((m = PTN_SYMBOL.matcher(str)).find()) {
 			String key = m.group(1);
 			segment = StringUtil.equals(key, ":controller") ? new ControllerSegment(key) : new DynamicSegment(key);
 		} else if ((m = PTN_PATH.matcher(str)).find()) {
-			segment = new PathSegment(m.group(1), true);
+			segment = new PathSegment(m.group(1), new Options().$("optional", true));
 		} else if ((m = PTN_STATIC.matcher(str)).find()) {
-			segment = new StaticSegment(m.group(1), true);
+			segment = new StaticSegment(m.group(1), new Options().$("optional", true));
 		} else if ((m = nonseparatorRegexp.matcher(str)).find()) {
 			segment = new StaticSegment(m.group(1));
 		} else if ((m = separatorRegexp.matcher(str)).find()) {
-			segment = new DividerSegment();
+			segment = new DividerSegment(m.group());
 		}
+		sb.delete(0, m.end());
 		return segment;
 	}
 
-	public void divideRouteOptions(LinkedList<Segment> segments, Options options) {
+	public Options[] divideRouteOptions(LinkedList<Segment> segments, Options options) {
 		options = options.except("pathPrefix", "namePrefix");
 
 		if (options.containsKey("namespace")) {
 			String namespace = options.getString("namespace").replace("/$", "");
 			options.put("controller", namespace + "/" + options.get("controller"));
 		}
+
+		Options requirements = options.takeoutOptions("requirements");
+		Options defaults = options.takeoutOptions("defaults");
+		Options conditions = options.takeoutOptions("conditions");
+
+		validateRouteConditions(conditions);
+
+		List<String> pathKeys = new ArrayList<String>();
+		for (Segment segment : segments)
+			if (segment.hasKey())
+				pathKeys.add(segment.getKey());
+
+		for (Map.Entry<String, Object> e : options.entrySet()) {
+			if (pathKeys.contains(e.getKey()) && !(e.getValue() instanceof Pattern)) {
+				defaults.put(e.getKey(), e.getValue());
+			} else {
+				requirements.put(e.getKey(), e.getValue());
+			}
+		}
+
+		return new Options[]{ defaults, requirements, conditions };
 	}
 
+	private Segment findSegment(LinkedList<Segment> segments, String key) {
+		for (Segment seg : segments) {
+			if (seg.hasKey() && StringUtil.equals(key, seg.getKey())) {
+				return seg;
+			}
+		}
+		return null;
+	}
+	public Options assignRouteOptions(LinkedList<Segment> segments, Options defaults, Options requirements) {
+		Options routeRequirements = new Options();
 
-	public Route build(String path, RouteOptions options) {
+		for (Map.Entry<String, Object> e : requirements.entrySet()) {
+			final String key = e.getKey();
+			final Object requirement = e.getValue();
+			Segment segment = findSegment(segments, key);
+			if (segment != null) {
+				segment.setRegexp((Pattern)requirement);
+			} else {
+				routeRequirements.put(key, requirement);
+			}
+		}
+
+		for (Map.Entry<String, Object> e : defaults.entrySet()) {
+			final String key = e.getKey();
+			final Object def = e.getValue();
+			Segment segment = findSegment(segments, key);
+			if (def != null)
+				segment.setOptional(true);
+				segment.setDefault(def);
+		}
+
+		//assignDefaultRouteOptions(segments);
+		return routeRequirements;
+	}
+
+	public Route build(String path, Options options) {
 		if (path.charAt(0) != '/')
 			path = "/" + path;
 
 		if (path.charAt(path.length() - 1) != '/')
 			path = path + "/";
 
-		String prefix = options.getPathPrefix().replace("^/", "");
+		String prefix = options.getString("pathPrefix").replace("^/", "");
 		if (StringUtil.isNotBlank(prefix))
 			path = "/" + prefix + path;
 
 		LinkedList<Segment> segments = segmentsForRoutePath(path);
-		divideRouteOptions(segments, options);
+		Options[] extOptions = divideRouteOptions(segments, options);
+		Options requirements = assignRouteOptions(segments, extOptions[0]/*defaults*/ , extOptions[1]/*requirements*/);
 
-		Route route = new Route(segments, null/*requirements*/, null/*conditions*/);
+		Route route = new Route(segments, requirements, extOptions[2]/*conditions*/);
 		return route;
+	}
+
+	private void validateRouteConditions(Options conditions) {
+/*
+ 		String[] methods = conditions.getStringArray("method");
+
+
+		for (String m : methods) {
+		}
+	*/
 	}
 }

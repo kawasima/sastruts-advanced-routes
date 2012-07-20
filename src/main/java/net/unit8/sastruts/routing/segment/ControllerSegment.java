@@ -1,8 +1,20 @@
 package net.unit8.sastruts.routing.segment;
 
-import net.unit8.sastruts.routing.Segment;
+import java.util.regex.Pattern;
 
-public class ControllerSegment extends Segment {
-	public ControllerSegment(String value) {
+import net.unit8.sastruts.routing.Options;
+
+public class ControllerSegment extends DynamicSegment {
+	public ControllerSegment(String value, Options options) {
+		super(value, options);
+	}
+
+	public ControllerSegment(String key) {
+		super(key);
+	}
+
+	@Override
+	public Pattern regexpChunk() {
+		return Pattern.compile("(?i-:(#{");
 	}
 }
