@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.unit8.sastruts.routing.options.RouteOptions;
 import net.unit8.sastruts.routing.segment.ControllerSegment;
 import net.unit8.sastruts.routing.segment.DividerSegment;
 import net.unit8.sastruts.routing.segment.DynamicSegment;
@@ -67,15 +68,13 @@ public class RouteBuilder {
 		return segment;
 	}
 
-	public void divideRouteOptions(LinkedList<Segment> segments, RouteOptions options) {
-		options.except("pathPrefix", "namePrefix");
+	public void divideRouteOptions(LinkedList<Segment> segments, Options options) {
+		options = options.except("pathPrefix", "namePrefix");
 
-		if (options.hasNamespace()) {
-			String namespace = options.getNamespace().replace("/$", "");
-			options.setController(namespace + "/" + options.getController());
+		if (options.containsKey("namespace")) {
+			String namespace = options.getString("namespace").replace("/$", "");
+			options.put("controller", namespace + "/" + options.get("controller"));
 		}
-
-
 	}
 
 

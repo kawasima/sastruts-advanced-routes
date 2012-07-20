@@ -1,6 +1,8 @@
-package net.unit8.sastruts.routing;
+package net.unit8.sastruts.routing.options;
 
-public class RouteOptions {
+import net.unit8.sastruts.routing.Options;
+
+public class RouteOptions implements Options {
 	private String pathPrefix;
 
 	public String getPathPrefix() {

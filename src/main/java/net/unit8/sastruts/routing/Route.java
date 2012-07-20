@@ -1,21 +1,31 @@
 package net.unit8.sastruts.routing;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.unit8.sastruts.routing.options.ConditionOptions;
 import net.unit8.sastruts.routing.options.RequirementOptions;
 
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
+import org.seasar.framework.util.tiger.CollectionsUtil;
+import org.seasar.framework.util.tiger.ReflectionUtil;
 
 public class Route {
 	private LinkedList<Segment> segments;
+	private Options requirements;
+	private Options conditions;
+	private List<String> significantKeys;
 
-	public Route(LinkedList<Segment> segments, RequirementOptions requirements, ConditionOptions conditions) {
+	public Route(LinkedList<Segment> segments, Options requirements, Options conditions) {
 		this.segments = segments;
+		this.requirements = requirements;
+		this.conditions = conditions;
 	}
 
 	public LinkedList<Segment> getSegments() {
@@ -31,5 +41,19 @@ public class Route {
 			}
 		}
 		return StringUtils.join(elements, "&");
+	}
+	
+	public List<String> significantKeys() {
+		if (significantKeys != null)
+			return significantKeys;
+		Set<String> sk = new HashSet<String>(); 
+		for (Segment segment : segments) {
+			if (segment.hasKey()) {
+				sk.add(segment.getKey());
+			}
+		}
+		sk.addAll(requirements.keySet());
+		significantKeys = new ArrayList<String>(sk);
+		return significantKeys;
 	}
 }

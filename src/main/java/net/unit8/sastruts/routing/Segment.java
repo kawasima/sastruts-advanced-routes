@@ -1,5 +1,6 @@
 package net.unit8.sastruts.routing;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.seasar.framework.util.URLUtil;
@@ -45,5 +46,13 @@ public abstract class Segment {
 
 	public String stringStructure(LinkedList<Segment> priorSegments) {
 		return isOptional ? continueStringStructure(priorSegments) : interpolationStatement(priorSegments);
+	}
+	
+	public boolean hasKey() {
+		return false;
+	}
+	
+	public String getKey() {
+		return null;
 	}
 }
