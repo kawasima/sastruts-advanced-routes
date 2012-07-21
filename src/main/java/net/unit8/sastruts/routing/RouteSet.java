@@ -2,7 +2,10 @@ package net.unit8.sastruts.routing;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import net.unit8.sastruts.routing.segment.RoutingException;
 
 import org.seasar.framework.util.StringUtil;
 
@@ -23,25 +26,35 @@ public class RouteSet {
 	}
 
 	public void segmentTree() {
-		int i = -1;
+		SegmentNode root = new SegmentNode(null);
+
 		for (Route route : routes) {
-			i += 1;
 			StringBuilder sb = new StringBuilder();
 			for (Segment seg : route.getSegments()) {
 				sb.append(seg.toString());
 			}
 			String[] segments = toPlainSegments(sb.toString());
-			System.out.println(segments);
+			
+			SegmentNode node = root;
 			for (String seg : segments) {
-				/*
 				if (StringUtil.isNotEmpty(seg) && seg.charAt(0) == ':') {
 					seg = ":dynamic";
 				}
-				if (node.isEmpty() || ) {
-					node.add();
+				if (node.children.containsKey(seg)) {
+					node = node.children.get(seg);
+				} else {
 				}
-				*/
 			}
+		}
+	}
+	
+	static class SegmentNode {
+		private String name;
+		private int index;
+		private HashMap<String, SegmentNode> children;
+		
+		SegmentNode(Segment segment) {
+			//this.segment = segment;
 		}
 	}
 /*
@@ -68,5 +81,13 @@ public class RouteSet {
 		Route route = getBuilder().build(path, options);
 		routes.add(route);
 		return route;
+	}
+	
+	public Options recognizePath(String path) {
+		for (Route route : routes) {
+			Options result = route.recognize(path);
+			if (result != null) return result;
+		}
+		throw new RoutingException("No route matches " + path);
 	}
 }

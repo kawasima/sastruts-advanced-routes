@@ -1,18 +1,30 @@
 package net.unit8.sastruts.routing.segment;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
+import org.seasar.framework.util.URLUtil;
+
 import net.unit8.sastruts.routing.Options;
+import net.unit8.sastruts.routing.RegexpUtil;
+import net.unit8.sastruts.routing.RouteBuilder;
 import net.unit8.sastruts.routing.Segment;
 
 public class DynamicSegment extends Segment {
 	private String key;
+	private String defaultValue;
+	private String regexp;
 
 	public DynamicSegment(String key) {
 		this(key, new Options());
 	}
 	public DynamicSegment(String key, Options options) {
 		this.key = key;
+		if(options.containsKey("default"))
+			this.defaultValue = options.getString("default");
+		if(options.containsKey("regexp"))
+			this.regexp = options.getString("regexp");
 	}
 
 	@Override
@@ -38,7 +50,35 @@ public class DynamicSegment extends Segment {
 		return key;
 	}
 
-	public Pattern regexpChunk() {
-		return Pattern.compile("");
+	@Override
+	public String regexpChunk() {
+		return StringUtils.isNotEmpty(regexp) ? regexp : defaultRegexpChunk();
+	}
+
+    public String defaultRegexpChunk() {
+    	return "([^" + StringUtils.join(RouteBuilder.SEPARATORS) + "])";
+    }
+
+	public String getDefault() {
+		return defaultValue;
+	}
+	
+	@Override
+	public void matchExtraction(Options params, Matcher match, int nextCapture) {
+		String m = match.group(nextCapture);
+		System.out.println(match.group(0));
+		String value = null;
+		if (m != null) {
+			value = URLUtil.decode(m, "UTF-8");
+		} else {
+			value = defaultValue;
+		}
+		params.put(key, value);
+	}
+	
+	@Override
+	public String buildPattern(String pattern) {
+		pattern = regexpChunk() + pattern;
+		return isOptional() ? RegexpUtil.optionalize(pattern) : pattern;		
 	}
 }

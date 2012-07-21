@@ -20,8 +20,8 @@ public class OptionalFormatSegment extends DynamicSegment {
 	}
 
 	@Override
-	public Pattern regexpChunk() {
-		return Pattern.compile("/|(\\.[^/?\\.]+)?");
+	public String regexpChunk() {
+		return "/|(\\.[^/?\\.]+)?";
 	}
 
 	@Override

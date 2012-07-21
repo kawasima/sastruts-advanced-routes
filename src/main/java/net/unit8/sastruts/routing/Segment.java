@@ -2,6 +2,7 @@ package net.unit8.sastruts.routing;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.seasar.framework.util.URLUtil;
@@ -17,7 +18,7 @@ public abstract class Segment {
 	}
 
 	public int numberOfCaptures() {
-		return regexpChunk().matcher("").groupCount();
+		return Pattern.compile(regexpChunk()).matcher("").groupCount();
 	}
 
 	public String getExtractionCode() {
@@ -52,6 +53,9 @@ public abstract class Segment {
 	public String allOptionalsAvailableCondition(LinkedList<Segment> priorSegments) {
 		return null;
 	}
+	
+	public void matchExtraction(Options params, Matcher match, int nextCapture) {
+	}
 
 	public boolean hasKey() {
 		return false;
@@ -61,7 +65,7 @@ public abstract class Segment {
 		return null;
 	}
 
-	public abstract Pattern regexpChunk();
+	public abstract String regexpChunk();
 	public boolean isOptional() {
 		return isOptional;
 	}
@@ -72,4 +76,8 @@ public abstract class Segment {
 
 	public void setRegexp(Pattern regexp) {}
 	public void setDefault(Object def) {}
+
+	public String buildPattern(String pattern) {
+		return null;
+	}
 }

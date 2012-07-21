@@ -30,8 +30,8 @@ public class StaticSegment extends Segment {
 	}
 
 	@Override
-	public Pattern regexpChunk() {
-		Pattern chunk = Pattern.compile(Pattern.quote(value));
+	public String regexpChunk() {
+		String chunk = RegexpUtil.escape(value);
 		return isOptional() ? chunk : chunk; // TODO
 	}
 
@@ -40,10 +40,11 @@ public class StaticSegment extends Segment {
 		return 0;
 	}
 
+	@Override
 	public String buildPattern(String pattern) {
-		String escaped = Pattern.quote(value);
+		String escaped = RegexpUtil.escape(value);
 		if (isOptional() && StringUtil.isNotEmpty(pattern)) {
-			return "?:" + RegexpUtil.optionalize(escaped) + "\\Z|" + escaped + RegexpUtil.unoptionalize(pattern);
+			return "(?:" + RegexpUtil.optionalize(escaped) + "\\Z|" + escaped + RegexpUtil.unoptionalize(pattern) + ")";
 		} else if (isOptional()) {
 			return RegexpUtil.optionalize(escaped);
 		} else {

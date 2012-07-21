@@ -20,7 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 
 public class RouteBuilder {
-	private static final String[] SEPARATORS = {"/", ".", "?"};
+	public static final String[] SEPARATORS = {"/", ".", "?"};
 	private static final Pattern PTN_OPTIONAL_FORMAT = Pattern.compile("\\A\\.(:format?)\\/");
 	private static final Pattern PTN_SYMBOL          = Pattern.compile("\\A:(\\w+)");
 	private static final Pattern PTN_PATH            = Pattern.compile("\\A\\*(\\w+)");

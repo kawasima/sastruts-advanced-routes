@@ -7,7 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.framework.util.tiger.CollectionsUtil;
@@ -18,6 +21,7 @@ public class Route {
 	private Options requirements;
 	private Options conditions;
 	private List<String> significantKeys;
+	private Options parameterShell;
 
 	public Route(LinkedList<Segment> segments, Options requirements, Options conditions) {
 		this.segments = segments;
@@ -65,5 +69,43 @@ public class Route {
 			method = "any";
 
 		return String.format("%-6s %-40s %s", method.toUpperCase(), segs.toString(), requirements);
+	}
+	
+	/*----recognize----*/
+	public Options recognize(String path) {
+		Pattern pattern = Pattern.compile(recognitionPattern(true));
+		Matcher match = pattern.matcher(path);
+		Options params = null;
+		if (match.find()) {
+			int nextCapture = 1;
+			params = getParameterShell();
+			for (Segment segment : segments) {
+				segment.matchExtraction(params, match, nextCapture);
+				nextCapture += segment.numberOfCaptures();
+			}
+		}
+		return params;
+	}
+	
+	private String recognitionPattern(boolean wrap) {
+		String pattern = "";
+		for (int i = segments.size() - 1; i >= 0; i--) {
+			Segment segment = segments.get(i);
+			pattern = segment.buildPattern(pattern);
+		}
+		return wrap ? ("\\A" + pattern + "\\Z") : pattern;
+	}
+	
+	private Options getParameterShell() {
+		if (parameterShell == null) {
+			parameterShell = new Options();
+			for (Map.Entry<String, Object> e : requirements.entrySet()) {
+				if (! (e.getValue() instanceof Pattern)) {
+					parameterShell.put(e.getKey(), e.getValue());
+				}
+			}
+		}
+		return parameterShell;
+			
 	}
 }
