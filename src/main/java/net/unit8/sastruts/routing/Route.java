@@ -115,16 +115,21 @@ public class Route {
 				(actionRequirement == null || StringUtil.equals(actionRequirement, action));
 	}
 
-	public String generate(Options options) {
+	public String generate(Options options, Options hash) {
 		if (generationRequirements()) {
 			for (Segment segment : segments) {
-				segment.getExtractionCode();
+				if (segment.hasKey()) {
+
+				}
 			}
 		}
 		return null;
 	}
 
 	public boolean generationRequirements() {
+		for(String key : requirements.keySet()) {
+
+		}
 		return false;
 	}
 	private String requirementFor(String key) {

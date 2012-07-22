@@ -120,7 +120,7 @@ public class RouteSet {
 		}
 		List<Route> routes = routesByController(controller, action);
 		for(Route route : routes) {
-			String results = route.generate(options);
+			String results = route.generate(options, merged);
 			if (results != null) {
 				return results;
 			}
