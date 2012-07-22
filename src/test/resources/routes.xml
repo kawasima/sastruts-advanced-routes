@@ -1,3 +1,6 @@
 <routes>
-	<match path="/gakko/:scoolCd/top">{"controller": "gakko.GakkoTop", "action":"index"}</match>
+	<match path="/user/list" controller="admin.User" action="index"/>
+	<controller name="blog">
+		<match path="post" to="post"/>
+	</controller>
 </routes>

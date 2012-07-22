@@ -1,7 +1,6 @@
 package net.unit8.sastruts.routing;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,11 +9,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
-import org.seasar.framework.util.tiger.CollectionsUtil;
-import org.seasar.framework.util.tiger.ReflectionUtil;
 
 public class Route {
 	private LinkedList<Segment> segments;
@@ -22,6 +18,9 @@ public class Route {
 	private Options conditions;
 	private List<String> significantKeys;
 	private Options parameterShell;
+	private boolean matchingPrepared;
+	private String controllerRequirement;
+	private String actionRequirement;
 
 	public Route(LinkedList<Segment> segments, Options requirements, Options conditions) {
 		this.segments = segments;
@@ -70,7 +69,7 @@ public class Route {
 
 		return String.format("%-6s %-40s %s", method.toUpperCase(), segs.toString(), requirements);
 	}
-	
+
 	/*----recognize----*/
 	public Options recognize(String path) {
 		Pattern pattern = Pattern.compile(recognitionPattern(true));
@@ -86,7 +85,7 @@ public class Route {
 		}
 		return params;
 	}
-	
+
 	private String recognitionPattern(boolean wrap) {
 		String pattern = "";
 		for (int i = segments.size() - 1; i >= 0; i--) {
@@ -95,7 +94,7 @@ public class Route {
 		}
 		return wrap ? ("\\A" + pattern + "\\Z") : pattern;
 	}
-	
+
 	private Options getParameterShell() {
 		if (parameterShell == null) {
 			parameterShell = new Options();
@@ -106,6 +105,43 @@ public class Route {
 			}
 		}
 		return parameterShell;
-			
+
+	}
+
+	/* --- generate --- */
+	public boolean matchesControllerAndAction(String controller, String action) {
+		prepareMatching();
+		return  (controllerRequirement == null || StringUtil.equals(controllerRequirement, controller)) &&
+				(actionRequirement == null || StringUtil.equals(actionRequirement, action));
+	}
+
+	public String generate(Options options) {
+		if (generationRequirements()) {
+			for (Segment segment : segments) {
+				segment.getExtractionCode();
+			}
+		}
+		return null;
+	}
+
+	public boolean generationRequirements() {
+		return false;
+	}
+	private String requirementFor(String key) {
+		if (requirements.containsKey(key))
+			return requirements.getString(key);
+		for (Segment segment : segments) {
+			if (segment.hasKey() && StringUtil.equals(segment.getKey(), key)) {
+				return segment.getRegexp();
+			}
+		}
+		return null;
+	}
+	private void prepareMatching() {
+		if (!matchingPrepared) {
+			controllerRequirement = requirementFor("controller");
+			actionRequirement = requirementFor("action");
+			matchingPrepared = true;
+		}
 	}
 }

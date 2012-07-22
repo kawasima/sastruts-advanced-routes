@@ -53,7 +53,7 @@ public abstract class Segment {
 	public String allOptionalsAvailableCondition(LinkedList<Segment> priorSegments) {
 		return null;
 	}
-	
+
 	public void matchExtraction(Options params, Matcher match, int nextCapture) {
 	}
 
@@ -78,6 +78,10 @@ public abstract class Segment {
 	public void setDefault(Object def) {}
 
 	public String buildPattern(String pattern) {
+		return null;
+	}
+
+	public String getRegexp() {
 		return null;
 	}
 }
