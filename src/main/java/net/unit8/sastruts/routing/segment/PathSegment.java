@@ -11,15 +11,10 @@ public class PathSegment extends DynamicSegment {
 		super(key, options);
 	}
 
-	public String interpoationChunk() {
-		return interpolationChunk(null);
-	}
-
-	public String interpolationChunk(String valueCode) {
-		if (valueCode == null)
-			valueCode = localName();
-
-		return valueCode;
+	@Override
+	public String interpolationChunk(Options hash) {
+		String value = hash.getString(getKey());
+		return value;
 	}
 
 	public String getDefault() {
@@ -43,7 +38,7 @@ public class PathSegment extends DynamicSegment {
 	public boolean optionalityImplied() {
 		return true;
 	}
-	
+
 	@Override
 	public void matchExtraction(Options params, Matcher match, int nextCapture) {
 		String value = match.group(nextCapture);

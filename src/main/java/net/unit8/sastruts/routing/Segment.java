@@ -1,7 +1,6 @@
 package net.unit8.sastruts.routing;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +13,10 @@ public abstract class Segment {
 	private boolean isOptional;
 
 	public Segment() {
+		this(null);
+	}
+	public Segment(String value) {
+		this.value = value;
 		isOptional = false;
 	}
 
@@ -25,33 +28,36 @@ public abstract class Segment {
 		return null;
 	}
 
-	public String continueStringStructure(LinkedList<Segment> priorSegments) {
-		if (priorSegments.isEmpty()) {
-			return interpolationStatement(priorSegments);
+	public String continueStringStructure(List<Segment> list, Options hash) {
+		if (list.isEmpty()) {
+			return interpolationStatement(list, hash);
 		} else {
-			LinkedList<Segment> newPriors = priorSegments;
-			return priorSegments.getLast().stringStructure(newPriors);
+			List<Segment> newPriors = list.subList(0, list.size() - 1);
+			return list.get(list.size() - 1).stringStructure(newPriors, hash);
 		}
 	}
-	public String interpolationChunk() {
+	public String interpolationChunk(Options hash) {
 		return URLUtil.encode(value, "UTF-8" /* TODO enable to set charset */);
 	}
 
-	public String interpolationStatement(LinkedList<Segment> priorSegments) {
+	public String interpolationStatement(List<Segment> list, Options hash) {
 		StringBuilder chunks = new StringBuilder(128);
-		for(Segment seg : priorSegments) {
-			chunks.append(seg.interpolationChunk());
+		for(Segment seg : list) {
+			chunks.append(seg.interpolationChunk(hash));
 		}
-		chunks.append(interpolationChunk());
-		return "\"" + chunks.toString() + "\"" + allOptionalsAvailableCondition(priorSegments);
+		chunks.append(interpolationChunk(hash));
+		return allOptionalsAvailableCondition(list) ? chunks.toString() : "";
 	}
 
-	public String stringStructure(LinkedList<Segment> priorSegments) {
-		return isOptional ? continueStringStructure(priorSegments) : interpolationStatement(priorSegments);
+	public String stringStructure(List<Segment> list, Options hash) {
+		return isOptional ? continueStringStructure(list, hash) : interpolationStatement(list, hash);
 	}
 
-	public String allOptionalsAvailableCondition(LinkedList<Segment> priorSegments) {
-		return null;
+	public boolean allOptionalsAvailableCondition(List<Segment> priorSegments) {
+		for (Segment segment : priorSegments) {
+			// TODO
+		}
+		return true;
 	}
 
 	public void matchExtraction(Options params, Matcher match, int nextCapture) {
@@ -63,6 +69,13 @@ public abstract class Segment {
 
 	public String getKey() {
 		return null;
+	}
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	public abstract String regexpChunk();

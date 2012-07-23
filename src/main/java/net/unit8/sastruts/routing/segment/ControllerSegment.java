@@ -20,7 +20,7 @@ public class ControllerSegment extends DynamicSegment {
 	public String regexpChunk() {
 		return "(?i-:(#{";
 	}
-	
+
 	@Override
 	public void matchExtraction(Options params, Matcher match, int nextCapture) {
 		String key = getKey();
@@ -30,7 +30,12 @@ public class ControllerSegment extends DynamicSegment {
 		} else {
 			 if (StringUtil.isNotEmpty(token))
 				 params.put(key, token.toLowerCase());
-	}	
+		}
+	}
 
+	@Override
+	public String interpolationChunk(Options hash) {
+		String value = hash.getString(getKey());
+		return value;
 	}
 }

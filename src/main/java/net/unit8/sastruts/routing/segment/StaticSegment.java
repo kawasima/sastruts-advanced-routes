@@ -1,23 +1,19 @@
 package net.unit8.sastruts.routing.segment;
 
-import java.util.regex.Pattern;
-
-import org.seasar.framework.util.StringUtil;
-
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.RegexpUtil;
 import net.unit8.sastruts.routing.Segment;
 
+import org.seasar.framework.util.StringUtil;
+
 public class StaticSegment extends Segment {
-	private String value;
 	private boolean raw;
 
 	public StaticSegment(String value) {
 		this(value, new Options());
 	}
 	public StaticSegment(String value, Options options) {
-		super();
-		this.value = value;
+		super(value);
 		if (options.containsKey("raw"))
 			this.raw = options.getBoolean("raw");
 		if (options.containsKey("optional"))
@@ -25,13 +21,13 @@ public class StaticSegment extends Segment {
 	}
 
 	@Override
-	public String interpolationChunk() {
-		return raw ? value : super.interpolationChunk();
+	public String interpolationChunk(Options hash) {
+		return raw ? getValue() : super.interpolationChunk(hash);
 	}
 
 	@Override
 	public String regexpChunk() {
-		String chunk = RegexpUtil.escape(value);
+		String chunk = RegexpUtil.escape(getValue());
 		return isOptional() ? chunk : chunk; // TODO
 	}
 
@@ -42,7 +38,7 @@ public class StaticSegment extends Segment {
 
 	@Override
 	public String buildPattern(String pattern) {
-		String escaped = RegexpUtil.escape(value);
+		String escaped = RegexpUtil.escape(getValue());
 		if (isOptional() && StringUtil.isNotEmpty(pattern)) {
 			return "(?:" + RegexpUtil.optionalize(escaped) + "\\Z|" + escaped + RegexpUtil.unoptionalize(pattern) + ")";
 		} else if (isOptional()) {
@@ -54,6 +50,6 @@ public class StaticSegment extends Segment {
 
 	@Override
 	public String toString() {
-		return value;
+		return getValue();
 	}
 }

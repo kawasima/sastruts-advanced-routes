@@ -2,6 +2,8 @@ package net.unit8.sastruts.routing;
 
 import java.util.Map;
 
+import org.seasar.framework.util.OgnlUtil;
+
 public class UrlRewriter {
 	public static String urlFor(Map<String, Object> opts) {
 		Options options = new Options(opts);

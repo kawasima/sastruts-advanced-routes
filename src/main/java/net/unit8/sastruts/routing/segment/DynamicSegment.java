@@ -1,5 +1,6 @@
 package net.unit8.sastruts.routing.segment;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,7 +63,7 @@ public class DynamicSegment extends Segment {
 	public String getDefault() {
 		return defaultValue;
 	}
-	
+
 	@Override
 	public void matchExtraction(Options params, Matcher match, int nextCapture) {
 		String m = match.group(nextCapture);
@@ -75,10 +76,16 @@ public class DynamicSegment extends Segment {
 		}
 		params.put(key, value);
 	}
-	
+
 	@Override
 	public String buildPattern(String pattern) {
 		pattern = regexpChunk() + pattern;
-		return isOptional() ? RegexpUtil.optionalize(pattern) : pattern;		
+		return isOptional() ? RegexpUtil.optionalize(pattern) : pattern;
+	}
+
+	@Override
+	public String interpolationChunk(Options hash) {
+		String value = hash.getString(getKey());
+		return URLUtil.encode(value, "UTF-8");
 	}
 }

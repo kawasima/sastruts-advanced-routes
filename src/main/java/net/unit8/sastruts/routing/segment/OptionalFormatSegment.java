@@ -15,8 +15,8 @@ public class OptionalFormatSegment extends DynamicSegment {
 	}
 
 	@Override
-	public String interpolationChunk() {
-		return "." + super.interpolationChunk();
+	public String interpolationChunk(Options hash) {
+		return "." + super.interpolationChunk(hash);
 	}
 
 	@Override

@@ -92,6 +92,12 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jsp_2.0_spec</artifactId>
+			<version>1.1</version>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 	<groupId>net.unit8.sastruts</groupId>
 	<artifactId>sastruts-advanced-routes</artifactId>
