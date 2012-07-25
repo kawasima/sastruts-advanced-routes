@@ -9,11 +9,15 @@ import org.seasar.framework.util.StringUtil;
 public class Options extends HashMap<String, Object>{
 	private static final long serialVersionUID = 1L;
 
+	public Options() {
+	}
+
 	public Options(Map<String, Object> options) {
 		super(options);
 	}
 
-	public Options() {
+	public static Options newInstance() {
+		return new Options();
 	}
 
 	public Options $(String key, Object value) {
