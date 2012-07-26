@@ -57,7 +57,7 @@ public class RouteBuilder {
 			segment = new OptionalFormatSegment();
 		} else if ((m = PTN_SYMBOL.matcher(str)).find()) {
 			String key = m.group(1);
-			segment = StringUtil.equals(key, ":controller") ? new ControllerSegment(key) : new DynamicSegment(key);
+			segment = StringUtil.equals(key, "controller") ? new ControllerSegment(key) : new DynamicSegment(key);
 		} else if ((m = PTN_PATH.matcher(str)).find()) {
 			segment = new PathSegment(m.group(1), new Options().$("optional", true));
 		} else if ((m = PTN_STATIC.matcher(str)).find()) {
@@ -123,17 +123,30 @@ public class RouteBuilder {
 			}
 		}
 
-		for (Map.Entry<String, Object> e : defaults.entrySet()) {
-			final String key = e.getKey();
-			final Object def = e.getValue();
+		for (String key : defaults.keySet()) {
+			final String defaultValue = defaults.getString(key);
 			Segment segment = findSegment(segments, key);
-			if (def != null)
+			if (defaultValue != null)
 				segment.setOptional(true);
-				segment.setDefault(def);
+				segment.setDefault(defaultValue);
 		}
 
-		//assignDefaultRouteOptions(segments);
+		assignDefaultRouteOptions(segments);
 		return routeRequirements;
+	}
+
+	private void assignDefaultRouteOptions(List<Segment> segments) {
+		for (Segment segment : segments) {
+			if (!(segment instanceof DynamicSegment))
+				continue;
+			String key = segment.getKey();
+			if (StringUtil.equals(key, "action")) {
+				segment.setDefault("index");
+				segment.setOptional(true);
+			} else if (StringUtil.equals(key, "id")) {
+				segment.setOptional(true);
+			}
+		}
 	}
 
 	public Route build(String path, Options options) {

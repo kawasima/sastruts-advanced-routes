@@ -9,9 +9,9 @@ public class RegexpUtil {
 		Pattern.compile("\\A(.|\\(.*\\))\\?\\Z")
 	};
 	public static String escape(String pattern) {
-		return pattern.replaceAll("([\\.\\-\\[\\]])", "\\$1");
+		return pattern.replaceAll("([\\.\\-\\[\\]])", "\\\\$1");
 	}
-	
+
 	public static String optionalize(String pattern) {
 		String unoptionalizedPattern = unoptionalize(pattern);
 		if (Pattern.matches("\\A(.|\\(.*\\))\\Z", unoptionalizedPattern)) {

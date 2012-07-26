@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import javax.xml.parsers.SAXParser;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.FileInputStreamUtil;
 import org.seasar.framework.util.SAXParserFactoryUtil;
 import org.seasar.framework.util.SAXParserUtil;
@@ -47,23 +48,16 @@ public class RouteLoader extends DefaultHandler {
 			if (StringUtil.isEmpty(path)) {
 				throw new SAXParseException("Can't find path in match.", locator);
 			}
-			int attrLen = attributes.getLength();
-			Options options = new Options();
-			for (int i=0; i < attrLen; i++) {
-				String optionName = attributes.getQName(i);
-				if (StringUtil.equals(optionName, "path"))
-					continue;
-				options.put(optionName, attributes.getValue(i));
-			}
-			if (controller != null) {
-				options.put("controller", controller);
-			}
+			Options options = processAttributes(attributes);
 			routeSet.addRoute(path, options);
 		} else if (qName.equalsIgnoreCase("controller")) {
 			controller = attributes.getValue("name");
 			if (StringUtil.isEmpty(controller)) {
 				throw new SAXParseException("Can't find controller name.", locator);
 			}
+		} else if (qName.equalsIgnoreCase("root")) {
+			Options options = processAttributes(attributes);
+			routeSet.addRoute("/", options);
 		}
 	}
 
@@ -76,5 +70,29 @@ public class RouteLoader extends DefaultHandler {
 
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
+	}
+
+	private Options processAttributes(Attributes attributes) {
+		int attrLen = attributes.getLength();
+		Options options = new Options();
+		for (int i=0; i < attrLen; i++) {
+			String optionName = attributes.getQName(i);
+			if (StringUtil.equals(optionName, "path")) {
+				continue;
+			} else if (StringUtils.equals(optionName, "to")) {
+				String[] tokens = StringUtils.split(attributes.getValue(i), "#", 2);
+				if (tokens.length == 1) {
+					options.$("action", tokens[0]);
+				} else {
+					options.$("controller", tokens[0]).$("action", tokens[1]);
+				}
+			} else {
+				options.put(optionName, attributes.getValue(i));
+			}
+		}
+		if (controller != null) {
+			options.put("controller", controller);
+		}
+		return options;
 	}
 }

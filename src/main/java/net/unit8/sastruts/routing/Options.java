@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.seasar.framework.util.IntegerConversionUtil;
 import org.seasar.framework.util.StringUtil;
+import org.seasar.struts.util.URLEncoderUtil;
 
 public class Options extends HashMap<String, Object>{
 	private static final long serialVersionUID = 1L;
@@ -53,5 +54,17 @@ public class Options extends HashMap<String, Object>{
 		} else {
 			return new Options();
 		}
+	}
+
+	public String toQueryString() {
+		StringBuilder queryString = new StringBuilder(512);
+		for (String key : this.keySet()) {
+			if (StringUtil.equals(key, "controller") || StringUtil.equals(key, "action"))
+				continue;
+			queryString.append(URLEncoderUtil.encode(key))
+				.append('=')
+				.append(URLEncoderUtil.encode(getString(key)));
+		}
+		return queryString.toString();
 	}
 }

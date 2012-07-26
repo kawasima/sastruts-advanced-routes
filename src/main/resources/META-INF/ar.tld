@@ -6,11 +6,6 @@
 	<function>
 		<name>urlFor</name>
 		<function-class>net.unit8.sastruts.UrlRewriter</function-class>
-		<function-signature>java.lang.String generate(net.unit8.sastruts.routing.Options)</function-signature>
-	</function>
-	<function>
-		<name>option</name>
-		<function-class>net.unit8.sastruts.routing.Options</function-class>
-		<function-signature>>net.unit8.sastruts.routing.Options newInstance()</function-signature>
+		<function-signature>java.lang.String urlFor(java.lang.String)</function-signature>
 	</function>
 </tablib>

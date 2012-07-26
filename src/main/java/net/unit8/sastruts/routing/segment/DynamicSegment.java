@@ -1,16 +1,16 @@
 package net.unit8.sastruts.routing.segment;
 
-import java.util.List;
+import java.net.URLDecoder;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringUtils;
-import org.seasar.framework.util.URLUtil;
 
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.RegexpUtil;
 import net.unit8.sastruts.routing.RouteBuilder;
 import net.unit8.sastruts.routing.Segment;
+
+import org.apache.commons.lang.StringUtils;
+import org.seasar.framework.util.URLUtil;
+import org.seasar.struts.util.URLEncoderUtil;
 
 public class DynamicSegment extends Segment {
 	private String key;
@@ -26,6 +26,9 @@ public class DynamicSegment extends Segment {
 			this.defaultValue = options.getString("default");
 		if(options.containsKey("regexp"))
 			this.regexp = options.getString("regexp");
+
+
+
 	}
 
 	@Override
@@ -57,7 +60,7 @@ public class DynamicSegment extends Segment {
 	}
 
     public String defaultRegexpChunk() {
-    	return "([^" + StringUtils.join(RouteBuilder.SEPARATORS) + "])";
+    	return "([^" + StringUtils.join(RouteBuilder.SEPARATORS) + "]+)";
     }
 
 	public String getDefault() {
@@ -65,9 +68,14 @@ public class DynamicSegment extends Segment {
 	}
 
 	@Override
+	public void setDefault(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	@Override
 	public void matchExtraction(Options params, Matcher match, int nextCapture) {
 		String m = match.group(nextCapture);
-		System.out.println(match.group(0));
+		System.out.println("Dynamic match:"+ match.group(0) + ":" + m);
 		String value = null;
 		if (m != null) {
 			value = URLUtil.decode(m, "UTF-8");

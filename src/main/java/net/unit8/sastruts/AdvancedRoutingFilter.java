@@ -1,5 +1,6 @@
 package net.unit8.sastruts;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.Filter;
@@ -11,13 +12,15 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.seasar.framework.container.S2Container;
-import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
+import net.unit8.sastruts.routing.Options;
+import net.unit8.sastruts.routing.Routes;
+
 import org.seasar.framework.util.StringUtil;
 import org.seasar.struts.config.S2ExecuteConfig;
 import org.seasar.struts.util.RequestUtil;
 import org.seasar.struts.util.RoutingUtil;
 import org.seasar.struts.util.S2ExecuteConfigUtil;
+import org.seasar.struts.util.URLEncoderUtil;
 
 public class AdvancedRoutingFilter implements Filter {
 
@@ -26,10 +29,21 @@ public class AdvancedRoutingFilter implements Filter {
 	 */
 	protected boolean jspDirectAccess = false;
 
+	/**
+	 * ルート定義ファイルのパスです。
+	 */
+	protected String routes;
+
 	public void init(FilterConfig config) throws ServletException {
 		String access = config.getInitParameter("jspDirectAccess");
 		if (!StringUtil.isBlank(access)) {
 			jspDirectAccess = Boolean.valueOf(access);
+		}
+
+		String routes = config.getInitParameter("routes");
+		if (StringUtil.isNotEmpty(routes)) {
+			String path = config.getServletContext().getRealPath(routes);
+			Routes.load(new File(path));
 		}
 	}
 
@@ -49,90 +63,19 @@ public class AdvancedRoutingFilter implements Filter {
 			return;
 		}
 		if (path.indexOf('.') < 0) {
-			String[] names = StringUtil.split(path, "/");
-			S2Container container = SingletonS2ContainerFactory.getContainer();
-			StringBuilder sb = new StringBuilder(50);
-			for (int i = 0; i < names.length; i++) {
-				if (container.hasComponentDef(sb + names[i] + "Action")) {
-					String actionPath = RoutingUtil.getActionPath(names, i);
-					String paramPath = RoutingUtil.getParamPath(names, i + 1);
-					if (StringUtil.isEmpty(paramPath)) {
-						if (!path.endsWith("/")) {
-							String queryString = "";
-							if (req.getQueryString() != null) {
-								queryString = "?" + req.getQueryString();
-							}
-							res.sendRedirect(contextPath + path + "/"
-									+ queryString);
-							return;
-						} else if (S2ExecuteConfigUtil.findExecuteConfig(
-								actionPath, req) != null) {
-							forward((HttpServletRequest) request,
-									(HttpServletResponse) response, actionPath,
-									null, null);
-							return;
-						}
-					} else {
-						S2ExecuteConfig executeConfig = S2ExecuteConfigUtil
-								.findExecuteConfig(actionPath, paramPath);
-						if (executeConfig != null) {
-							forward((HttpServletRequest) request,
-									(HttpServletResponse) response, actionPath,
-									paramPath, executeConfig);
-							return;
-						}
-					}
-				}
-				if (container.hasComponentDef(sb + "indexAction")) {
-					String actionPath = RoutingUtil.getActionPath(names, i - 1)
-							+ "/index";
-					String paramPath = RoutingUtil.getParamPath(names, i);
-					if (StringUtil.isEmpty(paramPath)) {
-						if (!path.endsWith("/")) {
-							String queryString = "";
-							if (req.getQueryString() != null) {
-								queryString = "?" + req.getQueryString();
-							}
-							res.sendRedirect(contextPath + path + "/"
-									+ queryString);
-							return;
-						} else if (S2ExecuteConfigUtil.findExecuteConfig(
-								actionPath, req) != null) {
-							forward((HttpServletRequest) request,
-									(HttpServletResponse) response, actionPath,
-									null, null);
-							return;
-						}
-					} else {
-						S2ExecuteConfig executeConfig = S2ExecuteConfigUtil
-								.findExecuteConfig(actionPath, paramPath);
-						if (executeConfig != null) {
-							forward((HttpServletRequest) request,
-									(HttpServletResponse) response, actionPath,
-									paramPath, executeConfig);
-							return;
-						}
-					}
-				}
-				sb.append(names[i] + "_");
-			}
-			if (container.hasComponentDef(sb + "indexAction")) {
-				String actionPath = RoutingUtil.getActionPath(names,
-						names.length - 1) + "/index";
-				if (!path.endsWith("/")) {
-					String queryString = "";
-					if (req.getQueryString() != null) {
-						queryString = "?" + req.getQueryString();
-					}
-					res.sendRedirect(contextPath + path + "/" + queryString);
-					return;
-				} else if (S2ExecuteConfigUtil.findExecuteConfig(actionPath,
-						req) != null) {
-					forward((HttpServletRequest) request,
-							(HttpServletResponse) response, actionPath, null,
-							null);
-					return;
-				}
+			Options options = Routes.recognizePath(path);
+			String controller = options.getString("controller");
+			String action = options.getString("action");
+			String[] names = StringUtil.split(controller, ".");
+			String actionPath = RoutingUtil.getActionPath(names, names.length - 1);
+			S2ExecuteConfig executeConfig = S2ExecuteConfigUtil.findExecuteConfig(actionPath, req);
+			if (executeConfig != null) {
+				String forwardPath = actionPath + ".do?METHOD_NAME=" + URLEncoderUtil.encode(action);
+				String queryString = options.toQueryString();
+				if (StringUtil.isNotEmpty(queryString))
+					forwardPath = "&" + queryString;
+				req.getRequestDispatcher(forwardPath).forward(req, res);
+				return;
 			}
 		}
 		chain.doFilter(request, response);

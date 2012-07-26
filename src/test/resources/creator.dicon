@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container 2.4//EN" 
+	"http://www.seasar.org/dtd/components24.dtd">
+<components>
+  <include path="customizer.dicon"/>
+  <include path="convention.dicon"/>
+  <component name="actionCreator" class="org.seasar.framework.container.creator.ActionCreator"/>
+  <component name="converterCreator" class="org.seasar.framework.container.creator.ConverterCreator"/>
+  <component name="daoCreator" class="org.seasar.framework.container.creator.DaoCreator"/>
+  <component name="dtoCreator" class="org.seasar.framework.container.creator.DtoCreator"/>
+  <component name="dxoCreator" class="org.seasar.framework.container.creator.DxoCreator"/>
+  <component name="formCreator" class="org.seasar.struts.creator.FormCreator"/>
+  <component name="helperCreator" class="org.seasar.framework.container.creator.HelperCreator"/>
+  <component name="interceptorCreator" class="org.seasar.framework.container.creator.InterceptorCreator"/>
+  <component name="logicCreator" class="org.seasar.framework.container.creator.LogicCreator"/>
+  <component name="pageCreator" class="org.seasar.framework.container.creator.PageCreator"/>
+  <component name="serviceCreator" class="org.seasar.framework.container.creator.ServiceCreator"/>
+  <component name="validatorCreator" class="org.seasar.framework.container.creator.ValidatorCreator"/>
+</components>

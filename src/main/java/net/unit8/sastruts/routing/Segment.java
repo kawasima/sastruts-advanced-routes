@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.seasar.framework.util.URLUtil;
+import org.seasar.struts.util.URLEncoderUtil;
 
 public abstract class Segment {
 	public static final String RESERVED_PCHAR = ":@&=+$,;";
@@ -37,7 +37,7 @@ public abstract class Segment {
 		}
 	}
 	public String interpolationChunk(Options hash) {
-		return URLUtil.encode(value, "UTF-8" /* TODO enable to set charset */);
+		return URLEncoderUtil.encode(value);
 	}
 
 	public String interpolationStatement(List<Segment> list, Options hash) {
@@ -88,7 +88,7 @@ public abstract class Segment {
 	}
 
 	public void setRegexp(Pattern regexp) {}
-	public void setDefault(Object def) {}
+	public void setDefault(String def) {}
 
 	public String buildPattern(String pattern) {
 		return null;

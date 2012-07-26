@@ -28,7 +28,7 @@ public class StaticSegment extends Segment {
 	@Override
 	public String regexpChunk() {
 		String chunk = RegexpUtil.escape(getValue());
-		return isOptional() ? chunk : chunk; // TODO
+		return isOptional() ? RegexpUtil.optionalize(chunk) : chunk;
 	}
 
 	@Override

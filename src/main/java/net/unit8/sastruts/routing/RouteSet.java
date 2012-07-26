@@ -20,6 +20,7 @@ public class RouteSet {
 	public RouteSet() {
 		routes = new ArrayList<Route>();
 		configurationFiles = new ArrayList<File>();
+		routesByController = new HashMap<String, Map<String,List<Route>>>();
 		loader = new RouteLoader(this);
 	}
 
@@ -112,7 +113,7 @@ public class RouteSet {
 	}
 
 	public String generate(Options options) {
-		Options merged = null;
+		Options merged = new Options(options);
 		String controller = merged.getString("controller");
 		String action     = merged.getString("action");
 		if (StringUtil.isEmpty(controller) || StringUtil.isEmpty(action)) {

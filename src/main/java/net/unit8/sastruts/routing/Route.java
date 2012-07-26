@@ -26,6 +26,13 @@ public class Route {
 		this.segments = segments;
 		this.requirements = requirements;
 		this.conditions = conditions;
+
+		if (!significantKeys().contains("action") && !requirements.containsKey("action")) {
+			requirements.$("action", "index");
+			significantKeys().add("action");
+		}
+
+
 	}
 
 	public LinkedList<Segment> getSegments() {
