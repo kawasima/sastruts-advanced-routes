@@ -1,6 +1,5 @@
 package net.unit8.sastruts.routing.segment;
 
-import java.net.URLDecoder;
 import java.util.regex.Matcher;
 
 import net.unit8.sastruts.routing.Options;
@@ -10,7 +9,6 @@ import net.unit8.sastruts.routing.Segment;
 
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.URLUtil;
-import org.seasar.struts.util.URLEncoderUtil;
 
 public class DynamicSegment extends Segment {
 	private String key;
@@ -75,7 +73,6 @@ public class DynamicSegment extends Segment {
 	@Override
 	public void matchExtraction(Options params, Matcher match, int nextCapture) {
 		String m = match.group(nextCapture);
-		System.out.println("Dynamic match:"+ match.group(0) + ":" + m);
 		String value = null;
 		if (m != null) {
 			value = URLUtil.decode(m, "UTF-8");

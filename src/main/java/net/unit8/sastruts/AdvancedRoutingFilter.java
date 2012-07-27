@@ -15,10 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.Routes;
 
+import org.seasar.framework.container.S2Container;
+import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.struts.config.S2ExecuteConfig;
 import org.seasar.struts.util.RequestUtil;
-import org.seasar.struts.util.RoutingUtil;
 import org.seasar.struts.util.S2ExecuteConfigUtil;
 import org.seasar.struts.util.URLEncoderUtil;
 
@@ -66,16 +67,15 @@ public class AdvancedRoutingFilter implements Filter {
 			Options options = Routes.recognizePath(path);
 			String controller = options.getString("controller");
 			String action = options.getString("action");
-			String[] names = StringUtil.split(controller, ".");
-			String actionPath = RoutingUtil.getActionPath(names, names.length - 1);
-			S2ExecuteConfig executeConfig = S2ExecuteConfigUtil.findExecuteConfig(actionPath, req);
-			if (executeConfig != null) {
-				String forwardPath = actionPath + ".do?METHOD_NAME=" + URLEncoderUtil.encode(action);
-				String queryString = options.toQueryString();
-				if (StringUtil.isNotEmpty(queryString))
-					forwardPath = "&" + queryString;
-				req.getRequestDispatcher(forwardPath).forward(req, res);
-				return;
+			String actionPath = ControllerUtil.fromClassNameToPath(controller);
+			S2Container container = SingletonS2ContainerFactory.getContainer();
+			if (container.hasComponentDef(actionPath.replace('/', '_').concat("Action"))) {
+				S2ExecuteConfig executeConfig = S2ExecuteConfigUtil.findExecuteConfig("/" + actionPath, req);
+				if (executeConfig != null) {
+					String forwardPath = "/" + actionPath + ".do?SAStruts.method=" + URLEncoderUtil.encode(action);
+					req.getRequestDispatcher(forwardPath).forward(req, res);
+					return;
+				}
 			}
 		}
 		chain.doFilter(request, response);
