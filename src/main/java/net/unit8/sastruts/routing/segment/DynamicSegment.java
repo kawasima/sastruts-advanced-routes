@@ -58,7 +58,7 @@ public class DynamicSegment extends Segment {
 	}
 
     public String defaultRegexpChunk() {
-    	return "([^" + StringUtils.join(RouteBuilder.SEPARATORS) + "]+)";
+    	return "([^" + RegexpUtil.escape(StringUtils.join(RouteBuilder.SEPARATORS)) + "]+)";
     }
 
 	public String getDefault() {

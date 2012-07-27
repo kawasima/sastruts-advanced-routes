@@ -1,0 +1,7 @@
+<routes>
+	<root to="index#index"/>
+	<match path="photos/*other" to="photos#unknown"/>
+	<match path="books/*section/:title" to="books#show"/>
+	<match path="*a/foo/*b" to="test#index"/>
+	<match path="/:controller/:action"/>
+</routes>

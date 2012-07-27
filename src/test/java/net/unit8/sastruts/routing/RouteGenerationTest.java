@@ -1,5 +1,9 @@
 package net.unit8.sastruts.routing;
 
+import net.unit8.sastruts.routing.Options;
+import net.unit8.sastruts.routing.Route;
+import net.unit8.sastruts.routing.RouteSet;
+
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.*;

@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 
+import net.unit8.sastruts.routing.Options;
+import net.unit8.sastruts.routing.RouteSet;
 import net.unit8.sastruts.routing.segment.RoutingException;
 
 import org.junit.Test;

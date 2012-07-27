@@ -3,6 +3,10 @@ package net.unit8.sastruts.routing;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import net.unit8.sastruts.routing.Options;
+import net.unit8.sastruts.routing.Route;
+import net.unit8.sastruts.routing.RouteSet;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seasar.framework.unit.Seasar2;

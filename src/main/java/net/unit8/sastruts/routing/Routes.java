@@ -25,7 +25,7 @@ public class Routes {
 		getRouteSet().load();
 	}
 
-	private static synchronized RouteSet getRouteSet() {
+	public static synchronized RouteSet getRouteSet() {
 		if (routeSet == null)
 			routeSet = new RouteSet();
 		return routeSet;
@@ -38,4 +38,5 @@ public class Routes {
 		}
 		return possibleControllers;
 	}
+
 }

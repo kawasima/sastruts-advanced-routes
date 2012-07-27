@@ -5,13 +5,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.unit8.sastruts.routing.segment.RoutingException;
 
 import org.seasar.framework.util.StringUtil;
 
 public class RouteSet {
-	private List<File> configurationFiles;
+	private TreeSet<File> configurationFiles;
 	private List<Route> routes;
 	private RouteBuilder builder;
 	private RouteLoader loader;
@@ -19,7 +21,7 @@ public class RouteSet {
 
 	public RouteSet() {
 		routes = new ArrayList<Route>();
-		configurationFiles = new ArrayList<File>();
+		configurationFiles = new TreeSet<File>();
 		routesByController = new HashMap<String, Map<String,List<Route>>>();
 		loader = new RouteLoader(this);
 	}
@@ -146,5 +148,13 @@ public class RouteSet {
 			actionMap.put(action, routesByAction);
 		}
 		return routesByAction;
+	}
+
+	public String toString() {
+		StringBuilder out = new StringBuilder(1024);
+		for (Route route : routes) {
+			out.append(route.toString()).append("\n");
+		}
+		return out.toString();
 	}
 }
