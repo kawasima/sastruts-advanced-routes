@@ -1,6 +1,7 @@
 package net.unit8.sastruts.routing.segment;
 
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.RegexpUtil;
@@ -13,7 +14,7 @@ import org.seasar.framework.util.URLUtil;
 public class DynamicSegment extends Segment {
 	private String key;
 	private String defaultValue;
-	private String regexp;
+	private Pattern regexp;
 
 	public DynamicSegment(String key) {
 		this(key, new Options());
@@ -23,10 +24,7 @@ public class DynamicSegment extends Segment {
 		if(options.containsKey("default"))
 			this.defaultValue = options.getString("default");
 		if(options.containsKey("regexp"))
-			this.regexp = options.getString("regexp");
-
-
-
+			this.regexp = Pattern.compile(options.getString("regexp"));
 	}
 
 	@Override
@@ -54,7 +52,7 @@ public class DynamicSegment extends Segment {
 
 	@Override
 	public String regexpChunk() {
-		return StringUtils.isNotEmpty(regexp) ? regexp : defaultRegexpChunk();
+		return regexp != null ? "(" + regexp.pattern() + ")" : defaultRegexpChunk();
 	}
 
     public String defaultRegexpChunk() {
@@ -68,6 +66,11 @@ public class DynamicSegment extends Segment {
 	@Override
 	public void setDefault(String defaultValue) {
 		this.defaultValue = defaultValue;
+	}
+
+	@Override
+	public void setRegexp(Pattern regexp) {
+		this.regexp = regexp;
 	}
 
 	@Override

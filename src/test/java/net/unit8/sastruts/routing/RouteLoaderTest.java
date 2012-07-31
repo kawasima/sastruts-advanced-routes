@@ -10,10 +10,14 @@ import net.unit8.sastruts.routing.RouteSet;
 import net.unit8.sastruts.routing.segment.RoutingException;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.seasar.framework.unit.Seasar2;
+import org.seasar.framework.unit.annotation.RegisterNamingConvention;
 import org.seasar.framework.util.ResourceUtil;
 
+@RunWith(Seasar2.class)
+@RegisterNamingConvention(false)
 public class RouteLoaderTest {
-
 	@Test
 	public void test() {
 		File routes = ResourceUtil.getResourceAsFile("routes.xml");

@@ -2,6 +2,7 @@ package net.unit8.sastruts.routing;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.SAXParser;
 
@@ -23,6 +24,8 @@ public class RouteLoader extends DefaultHandler {
 	private String namespace = null;
 	private Locator locator;
 	private RouteSet routeSet;
+	private Options options;
+	private String path;
 
 	public RouteLoader(RouteSet routeSet) {
 		this.routeSet = routeSet;
@@ -44,13 +47,20 @@ public class RouteLoader extends DefaultHandler {
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-		if (qName.equalsIgnoreCase("match")) {
-			String path = attributes.getValue("path");
+		if (qName.equalsIgnoreCase("match") || Routes.HTTP_METHODS.contains(qName.toUpperCase())) {
+			path = attributes.getValue("path");
 			if (StringUtil.isEmpty(path)) {
 				throw new SAXParseException("Can't find path in match.", locator);
 			}
-			Options options = processAttributes(attributes);
-			routeSet.addRoute(path, options);
+			options = processAttributes(attributes);
+			if (!qName.equalsIgnoreCase("match")) {
+				Options conditions = (Options)options.get("conditions");
+				if (conditions == null) {
+					conditions = new Options();
+					options.put("conditions", conditions);
+				}
+				conditions.$("method", qName.toUpperCase());
+			}
 		} else if (qName.equalsIgnoreCase("controller")) {
 			controller = attributes.getValue("name");
 			if (StringUtil.isEmpty(controller)) {
@@ -63,13 +73,26 @@ public class RouteLoader extends DefaultHandler {
 			namespace = attributes.getValue("name");
 			if (StringUtil.isEmpty(namespace)) {
 				throw new SAXParseException("Can't find namespace's name.", locator);
-			}			
+			}
+		} else if (qName.equalsIgnoreCase("requirements")) {
+			options.$("requirements", new Options());
+		} else if (qName.equalsIgnoreCase("requirement")) {
+			Options requirements = (Options)options.get("requirements");
+			if (requirements == null) {
+				throw new SAXParseException("Requirement must be in the requirements.", locator);
+			}
+			String name = attributes.getValue("name");
+			String value = attributes.getValue("value");
+			requirements.$(name, Pattern.compile(value));
 		}
 	}
 
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
-		if (qName.equalsIgnoreCase("controller")) {
+		if (qName.equalsIgnoreCase("match")  || Routes.HTTP_METHODS.contains(qName.toUpperCase())) {
+			routeSet.addRoute(path, options);
+			options = null;
+		} else if (qName.equalsIgnoreCase("controller")) {
 			controller = null;
 		} else if (qName.equalsIgnoreCase("namespace")) {
 			namespace = null;

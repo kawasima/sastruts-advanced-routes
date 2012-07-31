@@ -5,10 +5,15 @@ import net.unit8.sastruts.routing.Route;
 import net.unit8.sastruts.routing.RouteSet;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.seasar.framework.unit.Seasar2;
+import org.seasar.framework.unit.annotation.RegisterNamingConvention;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+@RunWith(Seasar2.class)
+@RegisterNamingConvention(false)
 public class RouteGenerationTest {
 	@Test
 	public void test() {

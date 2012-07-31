@@ -9,8 +9,11 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
+import org.seasar.struts.util.RequestUtil;
 
 public class Route {
 	private LinkedList<Segment> segments;
@@ -70,15 +73,24 @@ public class Route {
 		for (Segment s : segments) {
 			segs.append(s.toString());
 		}
-		String method = conditions.getString("method");
-		if (StringUtil.isEmpty(method))
-			method = "any";
-
-		return String.format("%-6s %-40s %s", method.toUpperCase(), segs.toString(), requirements);
+		List<Object> methods = conditions.getList("method");
+		if (methods.isEmpty()) {
+			methods.add("any");
+		}
+		StringBuilder out = new StringBuilder(256);
+		for (Object method : methods) {
+			out.append(String.format("%-6s %-40s %s\n", method.toString().toUpperCase(), segs.toString(), requirements));
+		}
+		return out.toString();
 	}
 
 	/*----recognize----*/
 	public Options recognize(String path) {
+		HttpServletRequest request = RequestUtil.getRequest();
+		List<Object> methods = conditions.getList("method");
+		if (request != null && !methods.isEmpty() && !methods.contains(request.getMethod())) {
+			return null;
+		}
 		Pattern pattern = Pattern.compile(recognitionPattern(true));
 		Matcher match = pattern.matcher(path);
 		Options params = null;

@@ -1,0 +1,4 @@
+<routes>
+	<get  path="methods/" to="Methods#get"/>
+	<post path="methods/" to="Methods#post"/>
+</routes>

@@ -1,0 +1,7 @@
+<routes>
+	<match path="posts/:year/:month" to="Posts#index">
+		<requirements>
+			<requirement name="year" value="\d{4}" />
+		</requirements>
+	</match>
+</routes>
