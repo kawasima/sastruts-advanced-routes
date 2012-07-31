@@ -157,7 +157,7 @@ public class RouteBuilder {
 			allowOptional = allowOptional && segment.isOptional();
 			if (!allowOptional && segment.isOptional()) {
 				segment.setOptional(false);
-			} else {
+			} else if (allowOptional && segment.hasDefault() && StringUtil.isNotEmpty(segment.getDefault())) {
 				segment.setOptional(true);
 			}
 		}

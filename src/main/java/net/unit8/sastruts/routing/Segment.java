@@ -70,6 +70,15 @@ public abstract class Segment {
 	public String getKey() {
 		return null;
 	}
+	
+	public boolean hasDefault() {
+		return false;
+	}
+	
+	public String getDefault() {
+		return null;
+	}
+	
 	public String getValue() {
 		return value;
 	}

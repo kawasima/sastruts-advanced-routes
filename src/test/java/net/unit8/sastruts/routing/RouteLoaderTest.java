@@ -24,10 +24,12 @@ public class RouteLoaderTest {
 		RouteSet routeSet = new RouteSet();
 		routeSet.addConfigurationFile(routes);
 		routeSet.load();
+		System.out.println(routeSet);
 		Options options = routeSet.recognizePath("/user/list");
 		assertThat(options.getString("controller"), is("admin.User"));
 		try {
-			routeSet.recognizePath("/user/unknown");
+			Options params = routeSet.recognizePath("/post/unknown");
+			System.out.println(params);
 			fail("Didn't raise RoutingException");
 		} catch (RoutingException e) {
 			assertTrue("No route matches", true);

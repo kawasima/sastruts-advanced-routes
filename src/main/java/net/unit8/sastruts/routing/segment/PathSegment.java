@@ -17,6 +17,7 @@ public class PathSegment extends DynamicSegment {
 		return value;
 	}
 
+	@Override
 	public String getDefault() {
 		return "";
 	}

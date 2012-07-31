@@ -153,7 +153,7 @@ public class RouteSet {
 	public String toString() {
 		StringBuilder out = new StringBuilder(1024);
 		for (Route route : routes) {
-			out.append(route.toString()).append("\n");
+			out.append(route.toString());
 		}
 		return out.toString();
 	}

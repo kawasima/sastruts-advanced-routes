@@ -45,9 +45,10 @@ public class RouteSetTest {
 		routeSet.addRoute("/post/", new Options().$("controller", "user.Post"));
 		routeSet.addRoute("/post/:id", new Options().$("controller", "user.Post").$("action", "show"));
 		routeSet.addRoute("/post/:id/comments", new Options().$("controller", "user.Post").$("action", "comments"));
+		routeSet.addRoute("/", new Options().$("controller", "Index"));
 		Options params = routeSet.recognizePath("/");
-		System.out.println(params);
-
+		assertThat(params.getString("controller"), is("Index"));
+		assertThat(params.getString("action"), is("index"));
 	}
 
 	@Test

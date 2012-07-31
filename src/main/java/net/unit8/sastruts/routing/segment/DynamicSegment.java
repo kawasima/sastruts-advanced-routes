@@ -59,6 +59,11 @@ public class DynamicSegment extends Segment {
     	return "([^" + RegexpUtil.escape(StringUtils.join(RouteBuilder.SEPARATORS)) + "]+)";
     }
 
+    @Override
+    public boolean hasDefault() {
+    	return true;
+    }
+    @Override
 	public String getDefault() {
 		return defaultValue;
 	}
