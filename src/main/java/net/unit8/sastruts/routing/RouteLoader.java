@@ -20,6 +20,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class RouteLoader extends DefaultHandler {
 	private String controller = null;
+	private String namespace = null;
 	private Locator locator;
 	private RouteSet routeSet;
 
@@ -58,6 +59,11 @@ public class RouteLoader extends DefaultHandler {
 		} else if (qName.equalsIgnoreCase("root")) {
 			Options options = processAttributes(attributes);
 			routeSet.addRoute("/", options);
+		} else if (qName.equalsIgnoreCase("namespace")) {
+			namespace = attributes.getValue("name");
+			if (StringUtil.isEmpty(namespace)) {
+				throw new SAXParseException("Can't find namespace's name.", locator);
+			}			
 		}
 	}
 
@@ -65,6 +71,8 @@ public class RouteLoader extends DefaultHandler {
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		if (qName.equalsIgnoreCase("controller")) {
 			controller = null;
+		} else if (qName.equalsIgnoreCase("namespace")) {
+			namespace = null;
 		}
 	}
 

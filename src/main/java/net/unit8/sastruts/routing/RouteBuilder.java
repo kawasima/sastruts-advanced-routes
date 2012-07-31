@@ -132,6 +132,7 @@ public class RouteBuilder {
 		}
 
 		assignDefaultRouteOptions(segments);
+		ensureRequiredSegments(segments);
 		return routeRequirements;
 	}
 
@@ -144,6 +145,19 @@ public class RouteBuilder {
 				segment.setDefault("index");
 				segment.setOptional(true);
 			} else if (StringUtil.equals(key, "id")) {
+				segment.setOptional(true);
+			}
+		}
+	}
+	
+	private void ensureRequiredSegments(List<Segment> segments) {
+		boolean allowOptional = true;
+		for (int i=segments.size() - 1; i >= 0; i--) {
+			Segment segment = segments.get(i);
+			allowOptional = allowOptional && segment.isOptional();
+			if (!allowOptional && segment.isOptional()) {
+				segment.setOptional(false);
+			} else {
 				segment.setOptional(true);
 			}
 		}
