@@ -26,6 +26,7 @@ public class Routes {
 	}
 
 	public static void load(File config) {
+		getRouteSet().getConfigurationFiles().clear();
 		getRouteSet().addConfigurationFile(config);
 		getRouteSet().load();
 	}

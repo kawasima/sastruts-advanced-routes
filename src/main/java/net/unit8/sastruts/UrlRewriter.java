@@ -27,7 +27,7 @@ public class UrlRewriter {
 		return url.toString();
 	}
 
-	protected static Options parseOptionString(String optionString) {
+	public static Options parseOptionString(String optionString) {
 		String[] urlTokens    = StringUtils.split(optionString, "?", 2);
 		String[] actionTokens = StringUtils.split(urlTokens[0], "#", 2);
 
@@ -38,7 +38,7 @@ public class UrlRewriter {
 		} else {
 			options.$("controller", actionTokens[0]).$("action", actionTokens[1]);
 		}
-		if (StringUtil.isNotEmpty(urlTokens[1])) {
+		if (urlTokens.length == 2 && StringUtil.isNotEmpty(urlTokens[1])) {
 			String[] paramToken = StringUtils.split(urlTokens[1], "=", 2);
 			if (paramToken.length == 1) {
 				options.$(paramToken[0], null);

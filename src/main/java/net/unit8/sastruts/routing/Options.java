@@ -92,4 +92,38 @@ public class Options extends HashMap<String, Object>{
 		return queryString.toString();
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(256).append("{ ");
+		for (Map.Entry<String, Object> entry : this.entrySet()) {
+			sb.append(":")
+				.append(entry.getKey())
+				.append(" => '")
+				.append(entry.getValue() == null ? "null" : entry.getValue().toString())
+				.append("', ");
+		}
+		if (sb.toString().endsWith(", "))
+			sb.delete(sb.length() - 2, sb.length());
+		sb.append(" }");
+
+		return sb.toString();
+	}
+
+	@Override
+	public boolean equals(Object another) {
+		if (another == null || !(another instanceof Options))
+			return false;
+		Options anotherOptions = (Options) another;
+		if (anotherOptions.keySet().size() != this.keySet().size())
+			return false;
+
+		for (String key : this.keySet()) {
+			Object anotherValue = anotherOptions.get(key);
+			Object thisValue    = this.get(key);
+			if (anotherValue != thisValue && (thisValue == null || !thisValue.equals(anotherValue))) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

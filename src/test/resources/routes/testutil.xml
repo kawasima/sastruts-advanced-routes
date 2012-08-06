@@ -1,0 +1,73 @@
+<!--
+	This routes config is transported from Redmine2.
+ -->
+<routes>
+	<root to="Welcome#index"/>
+	<match path="login" to="Account#login"/>
+	<match path="logout" to="Account#logout"/>
+	<match path="account/register" to="Account#register"/>
+	<match path="account/lost_password" to="Account#lostPassword"/>
+	<match path="account/activate" to="Account#activate"/>
+
+	<match path="/news/preview" controller="Previews" action="news"/>
+	<match path="/issues/preview/new/:projectId" to="Previews#issue" />
+	<match path="/issues/preview/edit/:id" to="Previews#issue" />
+	<match path="/issues/preview" to="Previews#issue" />
+
+	<match path="projects/:id/wiki" to="Wikis#edit"/>
+	<match path="projects/:id/wiki/destroy" to="Wikis#destroy"/>
+
+	<match path="boards/:boardId/topics/new" to="Messages#new"/>
+	<get path="boards/:boardId/topics/:id" to="Messages#show"/>
+	<match path="boards/:boardId/topics/quote/:id" to="Messages#quote"/>
+	<get path="boards/:boardId/topics/:id/edit" to="Messages#edit"/>
+
+	<post path="board/:boardId/topics/preview" to="Messages#preview"/>
+	<post path="board/:boardId/topics/:id/replies" to="Messages#reply"/>
+	<post path="board/:boardId/topics/:id/edit" to="Messages#edit"/>
+	<post path="board/:boardId/topics/:id/destroy" to="Messages#destroy"/>
+
+	<match path="/issues/auto_complete" to="AutoCompletes#issues"/>
+	<match path="/issues/context_menu" to="ContextMenus#issues"/>
+	<match path="/issues/changes" to="Journals#index"/>
+	<match path="/issues/:id/quoted" to="Journals#new">
+		<requirements>
+			<requirement name="id" value="\d+"/>
+		</requirements>
+	</match>
+	<match path="/journals/diff/:id" to="Journals#diff">
+		<requirements>
+			<requirement name="id" value="\d+"/>
+		</requirements>
+	</match>
+	<match path="/journals/edit/:id" to="Journals#edit">
+		<requirements>
+			<requirement name="id" value="\d+"/>
+		</requirements>
+	</match>
+
+	<match path="/projects/:projectId/issues/gantt" to="Gantts#show"/>
+	<match path="/issues/gantt" to="Gantts#show"/>
+
+	<match path="/projects/:projectId/issues/calendar" to="Calendars#show"/>
+	<match path="/issues/calendar" to="Calendars#show"/>
+
+	<match path="projects/:id/issues/report" to="reports#issueReport"/>
+	<match path="projects/:id/issues/report/:detail" to="reports#issueReportDetails"/>
+
+	<match path="my/account" controller="my" action="account" />
+	<match path="my/account/destroy" controller="my" action="destroy" />
+	<match path="my/page" controller="my" action="page" />
+	<match path="my" controller="my" action="index" />
+	<match path="my/reset_rss_key" controller="my" action="account" />
+	<match path="my/reset_api_key" controller="my" action="account" />
+	<match path="my/password" controller="my" action="account" />
+	<match path="my/page_layout" controller="my" action="account" />
+	<match path="my/add_block" controller="my" action="account" />
+	<match path="my/remove_block" controller="my" action="account" />
+	<match path="my/order_blocks" controller="my" action="order_blocks" />
+
+	<match path="uploads" to="Attachments#upload"/>
+
+	<get path="robots.txt" to="Welcome#robots"/>
+</routes>

@@ -32,4 +32,11 @@ public class RequirementsTest {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/requirements.xml"));
 		Routes.recognizePath("/posts/20XX/11");  // throw RoutingException
 	}
+
+	@Test
+	public void generate() {
+		Routes.load(ResourceUtil.getResourceAsFile("routes/requirements.xml"));
+		String path = Routes.generate(new Options().$("controller", "Posts").$("action", "index").$("year", "2012").$("month","11"));
+		assertThat(path, is("/posts/2012/11"));
+	}
 }

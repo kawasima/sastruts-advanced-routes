@@ -1,6 +1,7 @@
 package net.unit8.sastruts.routing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,18 +25,14 @@ public class RouteBuilder {
 	private static final Pattern PTN_PATH            = Pattern.compile("\\A\\*(\\w+)");
 	private static final Pattern PTN_STATIC          = Pattern.compile("\\A\\?(.*?)\\?");
 
-	private String[] separators;
-	private String[] optionalSeparators;
+	private List<String> optionalSeparators;
 	private Pattern separatorRegexp;
 	private Pattern nonseparatorRegexp;
-	private Pattern intervalRegexp;
 
 	public RouteBuilder() {
-		separators = SEPARATORS;
-		optionalSeparators = new String[]{"/"};
+		optionalSeparators = Arrays.asList(new String[]{"/"});
 		separatorRegexp = Pattern.compile("[" + RegexpUtil.escape(StringUtils.join(SEPARATORS)) + "]");
 		nonseparatorRegexp = Pattern.compile("\\A([^" + RegexpUtil.escape(StringUtils.join(SEPARATORS))+ "]+)");
-		intervalRegexp = Pattern.compile("(.*?)([" + RegexpUtil.escape(StringUtils.join(SEPARATORS)) + "]|$)");
 	}
 
 	public LinkedList<Segment> segmentsForRoutePath(String path) {
@@ -65,7 +62,7 @@ public class RouteBuilder {
 		} else if ((m = nonseparatorRegexp.matcher(str)).find()) {
 			segment = new StaticSegment(m.group(1));
 		} else if ((m = separatorRegexp.matcher(str)).find()) {
-			segment = new DividerSegment(m.group());
+			segment = new DividerSegment(m.group(), new Options().$("optional", optionalSeparators.contains(m.group())));
 		}
 		sb.delete(0, m.end());
 		return segment;
@@ -149,7 +146,7 @@ public class RouteBuilder {
 			}
 		}
 	}
-	
+
 	private void ensureRequiredSegments(List<Segment> segments) {
 		boolean allowOptional = true;
 		for (int i=segments.size() - 1; i >= 0; i--) {
@@ -183,12 +180,17 @@ public class RouteBuilder {
 	}
 
 	private void validateRouteConditions(Options conditions) {
-/*
- 		String[] methods = conditions.getStringArray("method");
+ 		List<Object> methods = conditions.getList("method");
 
+		for (Object m : methods) {
+			String method = (String)m;
+			if (StringUtil.equals(method, "HEAD")) {
+				throw new IllegalArgumentException("HTTP method HEAD is invalid in route conditions.");
+			}
 
-		for (String m : methods) {
+			if (!Routes.HTTP_METHODS.contains(method)) {
+				throw new IllegalArgumentException("Invalid HTTP method specified in route conditions: " + conditions);
+			}
 		}
-	*/
 	}
 }

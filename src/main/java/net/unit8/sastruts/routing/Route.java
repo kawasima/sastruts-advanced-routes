@@ -136,18 +136,18 @@ public class Route {
 
 	public String generate(Options options, Options hash) {
 		String path = null;
-		if (generationRequirements(hash)) {
+		if (generationRequirements(options, hash)) {
 			path = segments.get(segments.size() - 1).stringStructure(segments.subList(0, segments.size() - 1), hash);
 		}
 		return path;
 	}
 
-	public boolean generationRequirements(Options hash) {
+	public boolean generationRequirements(Options options, Options hash) {
 		boolean matched = true;
 		for(String key : requirements.keySet()) {
 			Object req = requirements.get(key);
 			if (req instanceof Pattern) {
-
+				matched &= (hash.containsKey(key) && ((Pattern)req).matcher(options.getString(key)).matches());
 			} else {
 				matched &= StringUtil.equals(hash.getString(key), requirements.getString(key));
 			}

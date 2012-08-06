@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.seasar.struts.util.URLEncoderUtil;
 
 public abstract class Segment {
@@ -46,16 +47,17 @@ public abstract class Segment {
 			chunks.append(seg.interpolationChunk(hash));
 		}
 		chunks.append(interpolationChunk(hash));
-		return allOptionalsAvailableCondition(list) ? chunks.toString() : "";
+		return allOptionalsAvailableCondition(list, hash) ? chunks.toString() : "";
 	}
 
 	public String stringStructure(List<Segment> list, Options hash) {
 		return isOptional ? continueStringStructure(list, hash) : interpolationStatement(list, hash);
 	}
 
-	public boolean allOptionalsAvailableCondition(List<Segment> priorSegments) {
+	public boolean allOptionalsAvailableCondition(List<Segment> priorSegments, Options hash) {
 		for (Segment segment : priorSegments) {
-			// TODO
+			if (!segment.isOptional() && segment.hasKey() && StringUtils.isEmpty(hash.getString(segment.getKey())))
+				return  false;
 		}
 		return true;
 	}
@@ -70,15 +72,15 @@ public abstract class Segment {
 	public String getKey() {
 		return null;
 	}
-	
+
 	public boolean hasDefault() {
 		return false;
 	}
-	
+
 	public String getDefault() {
 		return null;
 	}
-	
+
 	public String getValue() {
 		return value;
 	}

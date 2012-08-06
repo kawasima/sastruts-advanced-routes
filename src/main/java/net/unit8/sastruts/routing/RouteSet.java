@@ -10,6 +10,7 @@ import java.util.TreeSet;
 
 import net.unit8.sastruts.routing.segment.RoutingException;
 
+import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 
 public class RouteSet {
@@ -28,10 +29,15 @@ public class RouteSet {
 
 	public void clear() {
 		routes.clear();
+		routesByController.clear();
 	}
 
 	public void addConfigurationFile(File file) {
 		configurationFiles.add(file);
+	}
+
+	public Set<File> getConfigurationFiles() {
+		return configurationFiles;
 	}
 
 	public void load() {
@@ -48,45 +54,7 @@ public class RouteSet {
 			addRoute(":conroller/:action/:id", new Options());
 		}
 	}
-	public void segmentTree() {
-		SegmentNode root = new SegmentNode(null);
 
-		for (Route route : routes) {
-			StringBuilder sb = new StringBuilder();
-			for (Segment seg : route.getSegments()) {
-				sb.append(seg.toString());
-			}
-			String[] segments = toPlainSegments(sb.toString());
-
-			SegmentNode node = root;
-			for (String seg : segments) {
-				if (StringUtil.isNotEmpty(seg) && seg.charAt(0) == ':') {
-					seg = ":dynamic";
-				}
-				if (node.children.containsKey(seg)) {
-					node = node.children.get(seg);
-				} else {
-				}
-			}
-		}
-	}
-
-	static class SegmentNode {
-		private String name;
-		private int index;
-		private HashMap<String, SegmentNode> children;
-
-		SegmentNode(Segment segment) {
-			//this.segment = segment;
-		}
-	}
-/*
-	static class RouteNode {
-		public RouteNode(Segment)
-		public Segment segment;
-		public List<Integer>
-	}
-*/
 	public String[] toPlainSegments(String segs) {
 		segs = segs.replaceFirst("^\\/+", "").replaceFirst("\\/+$", "");
 		String[] segments = segs.split("\\.[^\\/]+\\/+|\\/+|\\.[^\\/]+\\Z");
@@ -124,11 +92,11 @@ public class RouteSet {
 		List<Route> routes = routesByController(controller, action);
 		for(Route route : routes) {
 			String results = route.generate(options, merged);
-			if (results != null) {
+			if (StringUtils.isNotEmpty(results)) {
 				return results;
 			}
 		}
-		throw new RoutingException("No route matches " + options.toString() /*TODO Added pretty-print for Options#toString*/);
+		throw new RoutingException("No route matches " + options.toString());
 	}
 
 	private List<Route> routesByController(String controller, String action) {
