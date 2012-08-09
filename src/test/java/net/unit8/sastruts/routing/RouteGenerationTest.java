@@ -18,8 +18,16 @@ public class RouteGenerationTest {
 	@Test
 	public void test() {
 		RouteSet routeSet = new RouteSet();
-		Route route = routeSet.addRoute("/blog/:id/comments", new Options().$("controller", "blog").$("action", "comments"));
-		String url = route.generate(new Options(), new Options().$("controller", "blog").$("action", "comments").$("id", 8));
+		Route route = routeSet.addRoute("/blog/:id/comments", new Options().$("controller", "Blog").$("action", "comments"));
+		String url = route.generate(new Options(), new Options().$("controller", "Blog").$("action", "comments").$("id", 8));
 		assertThat(url, is("/blog/8/comments"));
+	}
+
+	@Test
+	public void testController() {
+		RouteSet routeSet = new RouteSet();
+		Route route = routeSet.addRoute("/:controller/:action", new Options());
+		String url = route.generate(new Options(), new Options().$("controller", "Blog").$("action", "comments").$("id", 8));
+		assertThat(url, is("/blog/comments"));
 	}
 }

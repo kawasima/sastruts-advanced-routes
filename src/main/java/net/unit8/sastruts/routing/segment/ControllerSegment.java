@@ -46,8 +46,11 @@ public class ControllerSegment extends DynamicSegment {
 	public String interpolationChunk(Options hash) {
 		String value = hash.getString(getKey());
 		String path = StringUtils.replace(value, ".", "/");
-		if (path != null && path.lastIndexOf('/') >= 0) {
-			path = StringUtils.substringBeforeLast(path, "/") + "/" + StringUtils.uncapitalize(StringUtils.substringAfterLast(path, "/"));
+		if (path != null) {
+			if (path.lastIndexOf('/') >= 0)
+				path = StringUtils.substringBeforeLast(path, "/") + "/" + StringUtils.uncapitalize(StringUtils.substringAfterLast(path, "/"));
+			else
+				path = StringUtils.uncapitalize(path);
 		}
 		return path;
 	}

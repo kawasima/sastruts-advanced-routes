@@ -70,7 +70,7 @@ public class AdvancedRoutingFilter implements Filter {
 			String actionPath = ControllerUtil.fromClassNameToPath(controller);
 			S2Container container = SingletonS2ContainerFactory.getContainer();
 			if (container.hasComponentDef(actionPath.replace('/', '_').concat("Action"))) {
-				S2ExecuteConfig executeConfig = S2ExecuteConfigUtil.findExecuteConfig("/" + actionPath, req);
+				S2ExecuteConfig executeConfig = S2ExecuteConfigUtil.findExecuteConfig("/" + actionPath, action);
 				if (executeConfig != null) {
 					String forwardPath = "/" + actionPath + ".do?SAStruts.method=" + URLEncoderUtil.encode(action);
 					req.getRequestDispatcher(forwardPath).forward(req, res);

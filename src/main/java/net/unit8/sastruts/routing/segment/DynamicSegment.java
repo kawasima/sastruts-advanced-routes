@@ -1,5 +1,6 @@
 package net.unit8.sastruts.routing.segment;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -100,5 +101,19 @@ public class DynamicSegment extends Segment {
 	public String interpolationChunk(Options hash) {
 		String value = hash.getString(getKey());
 		return URLUtil.encode(value, "UTF-8");
+	}
+
+	@Override
+	public String stringStructure(List<Segment> list, Options hash) {
+		if (isOptional()) {
+			if (StringUtils.equals(hash.getString(getKey()), getDefault())) {
+				return continueStringStructure(list, hash);
+			} else {
+				return interpolationStatement(list, hash);
+			}
+		} else {
+			return interpolationStatement(list, hash);
+		}
+
 	}
 }
