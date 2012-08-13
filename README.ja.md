@@ -117,6 +117,55 @@ titleパラメータに"last-words-a-memoir" がセットされます。
 
 というURLを出力してくれます。
 
+
+## AdvancedRoutingFilter
+
+以上の設定をしたうえで、sastrutsのRoutingFilterの代わりにAdvancedRoutingFilterを使うと、上記ルーティング定義に
+したがって、リクエストをアクションメソッドに転送してくれるようになります。
+
+web.xmlにて、次のようにroutingfilterを設定されているところを、
+
+	<filter>
+		<filter-name>routingfilter</filter-name>
+		<filter-class>org.seasar.struts.filter.RoutingFilter</filter-class>
+		<init-param>
+			<param-name>jspDirectAccess</param-name>
+			<param-value>false</param-value>
+		</init-param>
+	</filter>
+
+次のようにAdvancedRoutingFilterを使うように書き換えてください。
+
+	<filter>
+		<filter-name>routingfilter</filter-name>
+		<filter-class>net.unit8.sastruts.AdvancedRoutingFilter</filter-class>
+		<init-param>
+			<param-name>jspDirectAccess</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>jspDirectAccess</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>routes</param-name>
+			<param-value>/WEB-INF/routes.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>checkInterval</param-name>
+			<param-value>-1</param-value>
+		</init-param>
+	</filter>
+
+追加されているパラメータについて説明します。
+
+routes は、ルート定義ファイルのパスを設定します。webapp以下からのパスで記述してください。
+
+checkInterval は、ルート定義ファイルの更新をチェックしにいく間隔(秒数)を設定します。この間隔でチェックし更新があれば
+定義ファイルをリロードします。0を設定すると常に更新チェックするようになりますが、これは負荷が高いため本番環境では
+避けるようにしてください。このパラメータを設定しない、またはマイナスの値を設定すると更新チェック自体がおこなわれず、
+アプリケーションを再起動しない限りルート定義はリロードされません。
+
 ## TODO
 
 * マッチングの最適化を実装する

@@ -17,6 +17,8 @@ import net.unit8.sastruts.routing.Routes;
 
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
+import org.seasar.framework.log.Logger;
+import org.seasar.framework.util.LongConversionUtil;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.struts.config.S2ExecuteConfig;
 import org.seasar.struts.util.RequestUtil;
@@ -24,6 +26,12 @@ import org.seasar.struts.util.S2ExecuteConfigUtil;
 import org.seasar.struts.util.URLEncoderUtil;
 
 public class AdvancedRoutingFilter implements Filter {
+	private static final Logger logger = Logger.getLogger(AdvancedRoutingFilter.class);
+
+	/**
+	 * 最後にroutes設定を読み込んだ時刻が入ります。
+	 */
+	private static long lastLoaded = -1;
 
 	/**
 	 * JSPのダイレクトアクセスを許すかどうかです。
@@ -33,7 +41,13 @@ public class AdvancedRoutingFilter implements Filter {
 	/**
 	 * ルート定義ファイルのパスです。
 	 */
-	protected String routes;
+	protected File routes;
+
+	/**
+	 * ルート定義ファイルの更新チェックをする時間を決めます。
+	 *
+	 */
+	protected Long checkInterval;
 
 	public void init(FilterConfig config) throws ServletException {
 		String access = config.getInitParameter("jspDirectAccess");
@@ -41,14 +55,36 @@ public class AdvancedRoutingFilter implements Filter {
 			jspDirectAccess = Boolean.valueOf(access);
 		}
 
-		String routes = config.getInitParameter("routes");
-		if (StringUtil.isNotEmpty(routes)) {
-			String path = config.getServletContext().getRealPath(routes);
-			Routes.load(new File(path));
+		String routesPath = config.getInitParameter("routes");
+		if (StringUtil.isNotEmpty(routesPath)) {
+			routes = new File(config.getServletContext().getRealPath(routesPath));
+			Routes.load(routes);
+			lastLoaded = System.currentTimeMillis();
+		}
+
+		String interval = config.getInitParameter("checkInterval");
+		if (StringUtil.isNotEmpty(interval)) {
+			checkInterval = LongConversionUtil.toLong(interval);
+		}
+		if (checkInterval == null || checkInterval < 0) {
+			checkInterval = -1L;
 		}
 	}
 
 	public void destroy() {
+	}
+
+	private void reloadRoutes() {
+		if (lastLoaded < 0 || System.currentTimeMillis() > lastLoaded + checkInterval * 1000) {
+			logger.debug("check update for routes.");
+			if (routes.lastModified() > lastLoaded) {
+				long t1 = System.currentTimeMillis();
+				Routes.load(routes);
+				long t2 = System.currentTimeMillis();
+				logger.debug(String.format("reload routes(%dms).", (t2 - t1)));
+			}
+			lastLoaded = System.currentTimeMillis();
+		}
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response,
@@ -63,6 +99,8 @@ public class AdvancedRoutingFilter implements Filter {
 		if (!processDirectAccess(request, response, chain, path)) {
 			return;
 		}
+		reloadRoutes();
+
 		if (path.indexOf('.') < 0) {
 			Options options = Routes.recognizePath(path);
 			String controller = options.getString("controller");
@@ -86,6 +124,7 @@ public class AdvancedRoutingFilter implements Filter {
 						forwardPath.append("&").append(URLEncoderUtil.encode(key))
 							.append("=").append(URLEncoderUtil.encode(params.getString(key)));
 					}
+					logger.debug(String.format("recognize route %s as %s#%s.", path, actionPath, action));
 					req.getRequestDispatcher(forwardPath.toString()).forward(req, res);
 					return;
 				}
