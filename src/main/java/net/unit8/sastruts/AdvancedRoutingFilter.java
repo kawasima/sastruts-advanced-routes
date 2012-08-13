@@ -67,13 +67,26 @@ public class AdvancedRoutingFilter implements Filter {
 			Options options = Routes.recognizePath(path);
 			String controller = options.getString("controller");
 			String action = options.getString("action");
+			Options params = options.except("controller", "action");
+
 			String actionPath = ControllerUtil.fromClassNameToPath(controller);
 			S2Container container = SingletonS2ContainerFactory.getContainer();
 			if (container.hasComponentDef(actionPath.replace('/', '_').concat("Action"))) {
-				S2ExecuteConfig executeConfig = S2ExecuteConfigUtil.findExecuteConfig("/" + actionPath, action);
+				S2ExecuteConfig executeConfig;
+				if (StringUtil.equals(action, "index")) {
+					executeConfig = S2ExecuteConfigUtil.findExecuteConfig("/" + actionPath, req);
+					action = executeConfig.getMethod().getName();
+				} else {
+					executeConfig = S2ExecuteConfigUtil.findExecuteConfig("/" + actionPath, action);
+				}
 				if (executeConfig != null) {
-					String forwardPath = "/" + actionPath + ".do?SAStruts.method=" + URLEncoderUtil.encode(action);
-					req.getRequestDispatcher(forwardPath).forward(req, res);
+					StringBuilder forwardPath = new StringBuilder(256);
+					forwardPath.append("/").append(actionPath).append(".do?SAStruts.method=").append(URLEncoderUtil.encode(action));
+					for(String key : params.keySet()) {
+						forwardPath.append("&").append(URLEncoderUtil.encode(key))
+							.append("=").append(URLEncoderUtil.encode(params.getString(key)));
+					}
+					req.getRequestDispatcher(forwardPath.toString()).forward(req, res);
 					return;
 				}
 			}
