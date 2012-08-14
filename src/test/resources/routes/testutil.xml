@@ -67,6 +67,44 @@
 	<match path="my/remove_block" controller="my" action="account" />
 	<match path="my/order_blocks" controller="my" action="order_blocks" />
 
+	<put path="users/:id/memberships/:membership_id" to="Users#editMembership"/>
+	<delete path="users/:id/memberships/:membership_id" to="Users#destroyMembership"/>
+	<post path="users/:id/memberships" to="Users#editMembership"/>
+
+	<get path="watchers/new" controller="Watchers" action="new"/>
+	<post path="watchers" controller="Watchers" action="create"/>
+	<post path="watchers/append" controller="Watchers" action="append"/>
+	<post path="watchers/destroy" controller="Watchers" action="destroy"/>
+	<post path="watchers/watch" controller="Watchers" action="watch"/>
+	<post path="watchers/unwatch" controller="Watchers" action="unwatch"/>
+	<get path="watchers/autocomplete_for_user" controller="Watchers" action="autocomplete_for_user"/>
+
+	<match path="projects/:id/settings/:tab" to="Projects#setting"/>
+
+	<get path="projects/:id/search" controller="Search" action="index"/>
+	<get path="search" controller="Search" action="index"/>
+
+	<post path="mail_handler" controller="MailHandler" action="index"/>
+
+	<match path="admin" controller="Admin" action="index"/>
+	<match path="admin/projects" controller="Admin" action="projects"/>
+	<match path="admin/plugins" controller="Admin" action="plugins"/>
+	<match path="admin/info" controller="Admin" action="info"/>
+	<match path="admin/test_email" controller="Admin" action="test_email"/>
+	<match path="admin/default_configuration" controller="Admin" action="defaultConfiguration"/>
+
+	<get path="workflows" controller="Workflows" action="index"/>
+	<match path="workflows/edit" controller="Workflows" action="edit"/>
+	<match path="workflows/permissions" controller="Workflows" action="permissions"/>
+	<match path="workflows/copy" controller="Workflows" action="copy"/>
+	<match path="settings" controller="Settings" action="index"/>
+	<match path="settings/edit" controller="Settings" action="edit"/>
+	<match path="settings/plugin:id" controller="Settings" action="plugin"/>
+
+	<get path="sys/projects" to="Sys#projets"/>
+	<post path="sys/projects/:id/repository" to="Sys#createProjectRepository"/>
+	<get path="sys/fetch_changesets" to="Sys#fetchChangesets"/>
+
 	<match path="uploads" to="Attachments#upload"/>
 
 	<get path="robots.txt" to="Welcome#robots"/>

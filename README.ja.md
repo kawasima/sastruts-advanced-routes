@@ -168,5 +168,11 @@ checkInterval は、ルート定義ファイルの更新をチェックしにい
 
 ## TODO
 
-* マッチングの最適化を実装する
 * デフォルトの設定を実装する。
+
+## License
+
+SAStruts Advanced Routes はApache License 2.0 の元に配布されます。
+
+* http://www.apache.org/licenses/LICENSE-2.0.txt
+

@@ -5,9 +5,11 @@ import static net.unit8.sastruts.routing.RoutingTestUtil.assertRecognizes;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.seasar.framework.mock.servlet.MockHttpServletRequest;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.annotation.RegisterNamingConvention;
 import org.seasar.framework.util.ResourceUtil;
+import org.seasar.struts.util.RequestUtil;
 
 
 @RunWith(Seasar2.class)
@@ -21,7 +23,8 @@ public class RoutingTestUtilTest {
 		assertRecognizes("Previews#news", "/news/preview");
 		long t1 = System.currentTimeMillis();
 		for (int i=0; i<ITER; i++) {
-			assertRecognizes("Attachments#upload", "/uploads");
+			((MockHttpServletRequest)RequestUtil.getRequest()).setMethod("GET");
+			assertRecognizes("Search#index?id=8", "/projects/8/search");
 		}
 		long t2 = System.currentTimeMillis();
 		System.out.println("recognize " + ITER + "times: " + (t2 - t1) + "ms");

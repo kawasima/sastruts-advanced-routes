@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import net.unit8.sastruts.routing.recognizer.OptimizedRecognizer;
 import net.unit8.sastruts.routing.segment.RoutingException;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,6 +19,7 @@ public class RouteSet {
 	private List<Route> routes;
 	private RouteBuilder builder;
 	private RouteLoader loader;
+	private Recognizer recognizer;
 	private Map<String, Map<String, List<Route>>> routesByController;
 
 	public RouteSet() {
@@ -25,6 +27,7 @@ public class RouteSet {
 		configurationFiles = new TreeSet<File>();
 		routesByController = new HashMap<String, Map<String,List<Route>>>();
 		loader = new RouteLoader(this);
+		recognizer = new OptimizedRecognizer();
 	}
 
 	public void clear() {
@@ -53,12 +56,7 @@ public class RouteSet {
 		} else {
 			addRoute(":conroller/:action/:id", new Options());
 		}
-	}
-
-	public String[] toPlainSegments(String segs) {
-		segs = segs.replaceFirst("^\\/+", "").replaceFirst("\\/+$", "");
-		String[] segments = segs.split("\\.[^\\/]+\\/+|\\/+|\\.[^\\/]+\\Z");
-		return segments;
+		recognizer.setRoutes(routes);
 	}
 
 	public RouteBuilder getBuilder() {
@@ -75,11 +73,7 @@ public class RouteSet {
 	}
 
 	public Options recognizePath(String path) {
-		for (Route route : routes) {
-			Options result = route.recognize(path);
-			if (result != null) return result;
-		}
-		throw new RoutingException("No route matches " + path);
+		return recognizer.recognize(path);
 	}
 
 	public String generate(Options options) {
