@@ -1,0 +1,8 @@
+<routes>
+	<match path="photos/:id.:format" to="Photos#show">
+		<defaults>
+			<default name="id" value="100"/>
+			<default name="format" value="jpg" />
+		</defaults>
+	</match>
+</routes>

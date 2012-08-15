@@ -39,11 +39,14 @@ public class UrlRewriter {
 			options.$("controller", actionTokens[0]).$("action", actionTokens[1]);
 		}
 		if (urlTokens.length == 2 && StringUtil.isNotEmpty(urlTokens[1])) {
-			String[] paramToken = StringUtils.split(urlTokens[1], "=", 2);
-			if (paramToken.length == 1) {
-				options.$(paramToken[0], null);
-			} else if (paramToken.length == 2) {
-				options.$(paramToken[0], paramToken[1]);
+			String[] paramToken = StringUtils.split(urlTokens[1], "&");
+			for(String keyValuePair: paramToken) {
+				String[] pair = StringUtils.split(keyValuePair, "=", 2);
+				if (pair.length == 1) {
+					options.$(pair[0], null);
+				} else if (pair.length == 2) {
+					options.$(pair[0], pair[1]);
+				}
 			}
 		}
 		return options;

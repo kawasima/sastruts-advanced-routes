@@ -123,6 +123,8 @@ public class RouteBuilder {
 		for (String key : defaults.keySet()) {
 			final String defaultValue = defaults.getString(key);
 			Segment segment = findSegment(segments, key);
+			if (segment == null)
+				throw new IllegalArgumentException(key + ": No matching segment exists; cannot assign default");
 			if (defaultValue != null)
 				segment.setOptional(true);
 				segment.setDefault(defaultValue);

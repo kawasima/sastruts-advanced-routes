@@ -2,7 +2,6 @@ package net.unit8.sastruts.routing;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +15,7 @@ import org.seasar.framework.util.StringUtil;
 import org.seasar.struts.util.RequestUtil;
 
 public class Route {
-	private LinkedList<Segment> segments;
+	private List<Segment> segments;
 	private Options requirements;
 	private Options conditions;
 	private List<String> significantKeys;
@@ -24,8 +23,9 @@ public class Route {
 	private boolean matchingPrepared;
 	private String controllerRequirement;
 	private String actionRequirement;
+	private Pattern recognizePattern;
 
-	public Route(LinkedList<Segment> segments, Options requirements, Options conditions) {
+	public Route(List<Segment> segments, Options requirements, Options conditions) {
 		this.segments = segments;
 		this.requirements = requirements;
 		this.conditions = conditions;
@@ -34,11 +34,10 @@ public class Route {
 			requirements.$("action", "index");
 			significantKeys().add("action");
 		}
-
-
+		recognizePattern = Pattern.compile(recognitionPattern(true));
 	}
 
-	public LinkedList<Segment> getSegments() {
+	public List<Segment> getSegments() {
 		return segments;
 	}
 
@@ -91,8 +90,7 @@ public class Route {
 		if (request != null && !methods.isEmpty() && !methods.contains(request.getMethod())) {
 			return null;
 		}
-		Pattern pattern = Pattern.compile(recognitionPattern(true));
-		Matcher match = pattern.matcher(path);
+		Matcher match = recognizePattern.matcher(path);
 		Options params = null;
 		if (match.find()) {
 			int nextCapture = 1;

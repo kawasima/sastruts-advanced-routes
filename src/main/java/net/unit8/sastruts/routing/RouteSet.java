@@ -73,6 +73,9 @@ public class RouteSet {
 	}
 
 	public Options recognizePath(String path) {
+		if (!recognizer.isOptimized()) {
+			recognizer.setRoutes(routes);
+		}
 		return recognizer.recognize(path);
 	}
 

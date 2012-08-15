@@ -22,6 +22,16 @@ public class OptimizedRecognizer extends Recognizer {
 
 	public void setRoutes(List<Route> routes) {
 		this.routes = routes;
+		optimize();
+	}
+
+	@Override
+	public boolean isOptimized() {
+		return tree != null;
+	}
+
+	@Override
+	public void optimize() {
 		tree = new SegmentNode(0);
 
 		int i = -1;
@@ -39,7 +49,6 @@ public class OptimizedRecognizer extends Recognizer {
 			}
 		}
 	}
-
 	private int calcIndex(String[] segments, SegmentNode node, int level) {
 		if (node.size() <= 1 || segments.length == level)
 			return node.getIndex();
@@ -54,6 +63,7 @@ public class OptimizedRecognizer extends Recognizer {
 
 	public Options recognize(String path) {
 		String[] segments = toPlainSegments(path);
+
 		int index = calcIndex(segments, tree, 0);
 		while (index < routes.size()) {
 			Options result = routes.get(index).recognize(path);

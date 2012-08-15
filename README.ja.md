@@ -80,7 +80,19 @@ namespaceの中で:controllerセグメントを使うことはできません。
 
 ### デフォルト
 
-未実装です。
+パラメータがパス要素として渡されない場合に、パラメータにデフォルト値を設定できます。
+
+	<match path="prefecture/:name" to="Prefecture#show"/>
+		<defaults>
+			<default name="name" value="tokyo"/>
+		</defaults>
+	</match>
+
+のように定義されていると、 /prefecture のようなURLに対応し、
+
+	{ :controller => "Prefecture", :action => "show", :name => "tokyo" }
+
+というパラメータ構成になります。
 
 ### HTTPメソッド
 
@@ -165,10 +177,6 @@ checkInterval は、ルート定義ファイルの更新をチェックしにい
 定義ファイルをリロードします。0を設定すると常に更新チェックするようになりますが、これは負荷が高いため本番環境では
 避けるようにしてください。このパラメータを設定しない、またはマイナスの値を設定すると更新チェック自体がおこなわれず、
 アプリケーションを再起動しない限りルート定義はリロードされません。
-
-## TODO
-
-* デフォルトの設定を実装する。
 
 ## License
 

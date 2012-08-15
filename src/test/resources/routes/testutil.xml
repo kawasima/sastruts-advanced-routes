@@ -81,6 +81,21 @@
 
 	<match path="projects/:id/settings/:tab" to="Projects#setting"/>
 
+	<match path="issues/new" controller="Issues" action="new" via="put,post" />
+
+	<get path="projects/:id/repository/:repositoryId/revisions/:rev" to="Repositories#revision"/>
+	<get path="projects/:id/repository/:repositoryId/revisions" to="Repositories#revision"/>
+	<post path="projects/:id/repository/:repositoryId/revisions/:rev/issues" to="Repositories#addRelatedIssue"/>
+	<delete path="projects/:id/repository/:repositoryId/revisions/:rev/issues/:issueId" to="Repositories#removeRelatedIssue"/>
+	<get path="projects/:id/repository/:repositoryId/revisions" to="Repositories#revisions"/>
+	<get path="projects/:id/repository/:repositoryId/revisions/:rev/:action/*path.:ext" controller="Repositories">
+		<requirements>
+			<requirement name="action" value="(browse|show|entry|raw|annotate|diff)"/>
+			<requirement name="rev" value="[a-z0-9\\.\\-_]+"/>
+		</requirements>
+	</get>
+
+
 	<get path="projects/:id/search" controller="Search" action="index"/>
 	<get path="search" controller="Search" action="index"/>
 

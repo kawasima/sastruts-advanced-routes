@@ -33,4 +33,12 @@ public class RoutingTestUtilTest {
 		assertGenerates("/projects/5/issues/calendar", "Calendars#show?projectId=5");
 		assertGenerates("/issues/calendar", "Calendars#show");
 	}
+
+	@Test
+	public void testComplexRequirement() {
+		Routes.load(ResourceUtil.getResourceAsFile("routes/testutil.xml"));
+		((MockHttpServletRequest)RequestUtil.getRequest()).setMethod("GET");
+		assertRecognizes("Repositories#show?id=8&rev=123&repositoryId=10&ext=txt&path=a/b/c",
+				"/projects/8/repository/10/revisions/123/show/a/b/c.txt");
+	}
 }

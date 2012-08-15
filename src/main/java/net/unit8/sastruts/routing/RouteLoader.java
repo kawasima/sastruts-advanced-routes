@@ -84,7 +84,17 @@ public class RouteLoader extends DefaultHandler {
 			String name = attributes.getValue("name");
 			String value = attributes.getValue("value");
 			requirements.$(name, Pattern.compile(value));
-		}
+		} else if (qName.equalsIgnoreCase("defaults")) {
+			options.$("defaults", new Options());
+		} else if (qName.equalsIgnoreCase("default")) {
+			Options defaults = (Options)options.get("defaults");
+			if (defaults == null) {
+				throw new SAXParseException("Default must be in the defaults.", locator);
+			}
+			String name = attributes.getValue("name");
+			String value = attributes.getValue("value");
+			defaults.$(name, value);
+	}
 	}
 
 	@Override
@@ -116,6 +126,18 @@ public class RouteLoader extends DefaultHandler {
 					options.$("action", tokens[0]);
 				} else {
 					options.$("controller", tokens[0]).$("action", tokens[1]);
+				}
+			} else if (StringUtils.equals(optionName, "via")){
+				String[] methods = StringUtils.split(attributes.getValue(i), ",");
+				for (String method : methods) {
+					if (Routes.HTTP_METHODS.contains(method.toUpperCase())) {
+						Options conditions = (Options)options.get("conditions");
+						if (conditions == null) {
+							conditions = new Options();
+							options.put("conditions", conditions);
+						}
+						conditions.$("method", method.toUpperCase());
+					}
 				}
 			} else {
 				options.put(optionName, attributes.getValue(i));

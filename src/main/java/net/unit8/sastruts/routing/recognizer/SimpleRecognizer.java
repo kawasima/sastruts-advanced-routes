@@ -21,4 +21,14 @@ public class SimpleRecognizer extends Recognizer {
 		}
 		throw new RoutingException("No route matches " + path);
 	}
+
+	@Override
+	public boolean isOptimized() {
+		return true;
+	}
+
+	@Override
+	public void optimize() {
+		// nop
+	}
 }
