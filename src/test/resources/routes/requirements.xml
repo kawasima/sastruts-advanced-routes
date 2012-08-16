@@ -4,4 +4,11 @@
 			<requirement name="year" value="\d{4}" />
 		</requirements>
 	</match>
+
+	<match path="images/(:width)x(:height)" to="Images#show">
+		<requirements>
+			<requirement name="width" value="\d+"/>
+			<requirement name="height" value="\d+"/>
+		</requirements>
+	</match>
 </routes>

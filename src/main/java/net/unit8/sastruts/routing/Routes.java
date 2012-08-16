@@ -11,8 +11,8 @@ import net.unit8.sastruts.routing.detector.ComponentControllerDetector;
 import org.seasar.framework.container.hotdeploy.HotdeployUtil;
 
 public class Routes {
-	private static List<String> possibleControllers = null;
-	private static RouteSet routeSet;
+	private static volatile List<String> possibleControllers = null;
+	private static RouteSet routeSet = new RouteSet();
 
 	public static final List<String> HTTP_METHODS = Collections.unmodifiableList(
 			Arrays.asList(new String[]{"GET" , "HEAD", "POST", "PUT", "DELETE", "OPTIONS"}));
@@ -33,15 +33,17 @@ public class Routes {
 	}
 
 	public static synchronized RouteSet getRouteSet() {
-		if (routeSet == null)
-			routeSet = new RouteSet();
 		return routeSet;
 	}
 
 	public static synchronized List<String> possibleControllers() {
 		if (possibleControllers == null) {
-			ControllerDetector detector = HotdeployUtil.isHotdeploy() ? new ClassControllerDetector() : new ComponentControllerDetector();
-			possibleControllers = detector.detect();
+			synchronized(Routes.class) {
+				if (possibleControllers == null) {
+					ControllerDetector detector = HotdeployUtil.isHotdeploy() ? new ClassControllerDetector() : new ComponentControllerDetector();
+					possibleControllers = detector.detect();
+				}
+			}
 		}
 		return possibleControllers;
 	}

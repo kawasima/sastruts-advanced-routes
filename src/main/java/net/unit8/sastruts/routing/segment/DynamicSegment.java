@@ -16,29 +16,24 @@ public class DynamicSegment extends Segment {
 	private String key;
 	private String defaultValue;
 	private Pattern regexp;
+	private boolean wrapParentheses = false;
 
 	public DynamicSegment(String key) {
 		this(key, new Options());
 	}
 	public DynamicSegment(String key, Options options) {
 		this.key = key;
-		if(options.containsKey("default"))
+		if (options.containsKey("default"))
 			this.defaultValue = options.getString("default");
-		if(options.containsKey("regexp"))
+		if (options.containsKey("regexp"))
 			this.regexp = Pattern.compile(options.getString("regexp"));
+		if (options.containsKey("wrapParentheses"))
+			this.wrapParentheses = options.getBoolean("wrapParentheses");
 	}
 
 	@Override
 	public String toString() {
-		return ":" + key;
-	}
-
-	public String localName() {
-		return key + "_value";
-	}
-
-	public String extractValue() {
-		return "localName =";
+		return wrapParentheses ? "(:" + key +")" : ":" + key;
 	}
 
 	@Override

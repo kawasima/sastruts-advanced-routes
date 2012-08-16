@@ -8,16 +8,18 @@ import org.seasar.framework.util.tiger.CollectionsUtil;
 
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.Recognizer;
+import net.unit8.sastruts.routing.RegexpUtil;
 import net.unit8.sastruts.routing.Route;
+import net.unit8.sastruts.routing.RouteBuilder;
 import net.unit8.sastruts.routing.segment.RoutingException;
 
 public class OptimizedRecognizer extends Recognizer {
 	private SegmentNode tree;
 	private List<Route> routes;
 
-	private String[] toPlainSegments(String str) {
+	public String[] toPlainSegments(String str) {
 		str = str.replaceAll("^/+", "").replaceAll("/+$", "");
-		return str.split("\\.[^/]+\\/+|/+|\\.[^/]+\\Z");
+		return str.split("\\.[^/]+\\/+|" + "[" + RegexpUtil.escape(StringUtils.join(RouteBuilder.SEPARATORS)) + "]+|\\.[^/]+\\Z");
 	}
 
 	public void setRoutes(List<Route> routes) {

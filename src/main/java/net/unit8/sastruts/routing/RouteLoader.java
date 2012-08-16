@@ -2,6 +2,8 @@ package net.unit8.sastruts.routing;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.SAXParser;
@@ -23,14 +25,16 @@ public class RouteLoader extends DefaultHandler {
 	private String controller = null;
 	private String namespace = null;
 	private Locator locator;
-	private RouteSet routeSet;
+	private RouteBuilder builder;
 	private Options options;
 	private String path;
+	private List<Route> routes;
 
-	public RouteLoader(RouteSet routeSet) {
-		this.routeSet = routeSet;
+	public RouteLoader(RouteBuilder builder) {
+		this.routes = new ArrayList<Route>();
+		this.builder = builder;
 	}
-	public synchronized void load(File config) {
+	public List<Route> load(File config) {
 		FileInputStream in = FileInputStreamUtil.create(config);
 		try {
 			SAXParser parser = SAXParserFactoryUtil.newSAXParser();
@@ -38,6 +42,7 @@ public class RouteLoader extends DefaultHandler {
 		} finally {
 			IOUtils.closeQuietly(in);
 		}
+		return routes;
 	}
 
 	@Override
@@ -68,7 +73,7 @@ public class RouteLoader extends DefaultHandler {
 			}
 		} else if (qName.equalsIgnoreCase("root")) {
 			Options options = processAttributes(attributes);
-			routeSet.addRoute("/", options);
+			routes.add(builder.build("/", options));
 		} else if (qName.equalsIgnoreCase("namespace")) {
 			namespace = attributes.getValue("name");
 			if (StringUtil.isEmpty(namespace)) {
@@ -100,7 +105,7 @@ public class RouteLoader extends DefaultHandler {
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		if (qName.equalsIgnoreCase("match")  || Routes.HTTP_METHODS.contains(qName.toUpperCase())) {
-			routeSet.addRoute(path, options);
+			routes.add(builder.build(path, options));
 			options = null;
 		} else if (qName.equalsIgnoreCase("controller")) {
 			controller = null;

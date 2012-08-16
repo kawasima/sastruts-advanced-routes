@@ -2,6 +2,7 @@ package net.unit8.sastruts.routing;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
+import static net.unit8.sastruts.routing.RoutingTestUtil.*;
 
 import net.unit8.sastruts.routing.segment.RoutingException;
 
@@ -33,6 +34,12 @@ public class RequirementsTest {
 		Routes.recognizePath("/posts/20XX/11");  // throw RoutingException
 	}
 
+	@Test
+	public void testParentheses() {
+		Routes.load(ResourceUtil.getResourceAsFile("routes/requirements.xml"));
+		assertRecognizes("Images#show?width=640&height=480", "/images/640x480");
+		assertGenerates("/images/640x480", "Images#show?width=640&height=480");
+	}
 	@Test
 	public void generate() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/requirements.xml"));

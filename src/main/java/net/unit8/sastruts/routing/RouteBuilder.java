@@ -2,7 +2,6 @@ package net.unit8.sastruts.routing;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -19,9 +18,9 @@ import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 
 public class RouteBuilder {
-	public static final String[] SEPARATORS = {"/", ".", "?"};
+	public static final String[] SEPARATORS = {"/", ".", "?", "(", ")"};
 	private static final Pattern PTN_OPTIONAL_FORMAT = Pattern.compile("\\A\\.(:format?)\\/");
-	private static final Pattern PTN_SYMBOL          = Pattern.compile("\\A:(\\w+)");
+	private static final Pattern PTN_SYMBOL          = Pattern.compile("\\A(?::(\\w+)|\\(:(\\w+)\\))");
 	private static final Pattern PTN_PATH            = Pattern.compile("\\A\\*(\\w+)");
 	private static final Pattern PTN_STATIC          = Pattern.compile("\\A\\?(.*?)\\?");
 
@@ -35,8 +34,8 @@ public class RouteBuilder {
 		nonseparatorRegexp = Pattern.compile("\\A([^" + RegexpUtil.escape(StringUtils.join(SEPARATORS))+ "]+)");
 	}
 
-	public LinkedList<Segment> segmentsForRoutePath(String path) {
-		LinkedList<Segment> segments = new LinkedList<Segment>();
+	public List<Segment> segmentsForRoutePath(String path) {
+		List<Segment> segments = new ArrayList<Segment>();
 		StringBuilder rest = new StringBuilder(path);
 
 		while (rest.length() > 0) {
@@ -53,8 +52,13 @@ public class RouteBuilder {
 		if ((m = PTN_OPTIONAL_FORMAT.matcher(str)).find()) {
 			segment = new OptionalFormatSegment();
 		} else if ((m = PTN_SYMBOL.matcher(str)).find()) {
+			Options options = new Options();
 			String key = m.group(1);
-			segment = StringUtil.equals(key, "controller") ? new ControllerSegment(key) : new DynamicSegment(key);
+			if (StringUtil.isEmpty(key)) {
+				key = m.group(2);
+				options.$("wrapParentheses", true);
+			}
+			segment = StringUtil.equals(key, "controller") ? new ControllerSegment(key, options) : new DynamicSegment(key, options);
 		} else if ((m = PTN_PATH.matcher(str)).find()) {
 			segment = new PathSegment(m.group(1), new Options().$("optional", true));
 		} else if ((m = PTN_STATIC.matcher(str)).find()) {
@@ -68,7 +72,7 @@ public class RouteBuilder {
 		return segment;
 	}
 
-	public Options[] divideRouteOptions(LinkedList<Segment> segments, Options options) {
+	public Options[] divideRouteOptions(List<Segment> segments, Options options) {
 		options = options.except("pathPrefix", "namePrefix");
 
 		if (options.containsKey("namespace")) {
@@ -98,7 +102,7 @@ public class RouteBuilder {
 		return new Options[]{ defaults, requirements, conditions };
 	}
 
-	private Segment findSegment(LinkedList<Segment> segments, String key) {
+	private Segment findSegment(List<Segment> segments, String key) {
 		for (Segment seg : segments) {
 			if (seg.hasKey() && StringUtil.equals(key, seg.getKey())) {
 				return seg;
@@ -106,7 +110,7 @@ public class RouteBuilder {
 		}
 		return null;
 	}
-	public Options assignRouteOptions(LinkedList<Segment> segments, Options defaults, Options requirements) {
+	public Options assignRouteOptions(List<Segment> segments, Options defaults, Options requirements) {
 		Options routeRequirements = new Options();
 
 		for (Map.Entry<String, Object> e : requirements.entrySet()) {
@@ -173,7 +177,7 @@ public class RouteBuilder {
 		if (StringUtil.isNotBlank(prefix))
 			path = "/" + prefix + path;
 
-		LinkedList<Segment> segments = segmentsForRoutePath(path);
+		List<Segment> segments = segmentsForRoutePath(path);
 		Options[] extOptions = divideRouteOptions(segments, options);
 		Options requirements = assignRouteOptions(segments, extOptions[0]/*defaults*/ , extOptions[1]/*requirements*/);
 

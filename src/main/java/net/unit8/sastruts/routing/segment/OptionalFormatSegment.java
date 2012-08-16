@@ -30,10 +30,6 @@ public class OptionalFormatSegment extends DynamicSegment {
 		return "(.:format)?";
 	}
 
-	public String extractValue() {
-		return localName() + " = options.getString('" + getKey() + "').toLowerCase()";
-	}
-
 	@Override
 	public void matchExtraction(Options params, Matcher match, int nextCapture) {
 		String m = match.group(nextCapture);

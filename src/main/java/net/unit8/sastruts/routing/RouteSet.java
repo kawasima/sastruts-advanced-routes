@@ -17,8 +17,7 @@ import org.seasar.framework.util.StringUtil;
 public class RouteSet {
 	private TreeSet<File> configurationFiles;
 	private List<Route> routes;
-	private RouteBuilder builder;
-	private RouteLoader loader;
+	private RouteBuilder builder = new RouteBuilder();
 	private Recognizer recognizer;
 	private Map<String, Map<String, List<Route>>> routesByController;
 
@@ -26,7 +25,6 @@ public class RouteSet {
 		routes = new ArrayList<Route>();
 		configurationFiles = new TreeSet<File>();
 		routesByController = new HashMap<String, Map<String,List<Route>>>();
-		loader = new RouteLoader(this);
 		recognizer = new OptimizedRecognizer();
 	}
 
@@ -51,7 +49,8 @@ public class RouteSet {
 	private void loadRoutes() {
 		if (!configurationFiles.isEmpty()) {
 			for (File config : configurationFiles) {
-				loader.load(config);
+				List<Route> newRoutes = new RouteLoader(builder).load(config);
+				routes = newRoutes;
 			}
 		} else {
 			addRoute(":conroller/:action/:id", new Options());
@@ -59,15 +58,8 @@ public class RouteSet {
 		recognizer.setRoutes(routes);
 	}
 
-	public RouteBuilder getBuilder() {
-		if (builder == null)
-			builder = new RouteBuilder();
-
-		return builder;
-	}
-
 	public Route addRoute(String path, Options options) {
-		Route route = getBuilder().build(path, options);
+		Route route = builder.build(path, options);
 		routes.add(route);
 		return route;
 	}

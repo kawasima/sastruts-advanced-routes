@@ -27,7 +27,7 @@ import org.seasar.struts.util.URLEncoderUtil;
 
 public class AdvancedRoutingFilter implements Filter {
 	private static final Logger logger = Logger.getLogger(AdvancedRoutingFilter.class);
-
+	private static volatile boolean loading = false;
 	/**
 	 * 最後にroutes設定を読み込んだ時刻が入ります。
 	 */
@@ -75,15 +75,27 @@ public class AdvancedRoutingFilter implements Filter {
 	}
 
 	private void reloadRoutes() {
-		if (lastLoaded < 0 || System.currentTimeMillis() > lastLoaded + checkInterval * 1000) {
-			logger.debug("check update for routes.");
-			if (routes.lastModified() > lastLoaded) {
-				long t1 = System.currentTimeMillis();
-				Routes.load(routes);
-				long t2 = System.currentTimeMillis();
-				logger.debug(String.format("reload routes(%dms).", (t2 - t1)));
+		if ((lastLoaded < 0 || System.currentTimeMillis() > lastLoaded + checkInterval * 1000 ) && !loading) {
+			synchronized(this) {
+				if (!loading)
+					loading = true;
+				else
+					return;
 			}
-			lastLoaded = System.currentTimeMillis();
+			if (loading) {
+				try {
+					logger.debug("check update for routes.");
+					if (routes.lastModified() > lastLoaded) {
+						long t1 = System.currentTimeMillis();
+						Routes.load(routes);
+						long t2 = System.currentTimeMillis();
+						logger.debug(String.format("reload routes(%dms).", (t2 - t1)));
+					}
+					lastLoaded = System.currentTimeMillis();
+				} finally {
+					loading = false;
+				}
+			}
 		}
 	}
 
