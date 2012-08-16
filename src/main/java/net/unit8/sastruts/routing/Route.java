@@ -34,7 +34,6 @@ public class Route {
 			requirements.$("action", "index");
 			significantKeys().add("action");
 		}
-		recognizePattern = Pattern.compile(recognitionPattern(true));
 	}
 
 	public List<Segment> getSegments() {
@@ -89,6 +88,9 @@ public class Route {
 		List<Object> methods = conditions.getList("method");
 		if (request != null && !methods.isEmpty() && !methods.contains(request.getMethod())) {
 			return null;
+		}
+		if (recognizePattern == null) {
+			recognizePattern = Pattern.compile(recognitionPattern(true));
 		}
 		Matcher match = recognizePattern.matcher(path);
 		Options params = null;
