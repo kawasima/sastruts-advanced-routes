@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.struts.util.RequestUtil;
+import org.seasar.struts.util.URLEncoderUtil;
 
 public class Route {
 	private List<Segment> segments;
@@ -114,6 +115,21 @@ public class Route {
 		return wrap ? ("\\A" + pattern + "\\Z") : pattern;
 	}
 
+	private String buildQueryString(Options hash, List<String> onlyKeys) {
+		List<String> elements = new ArrayList<String>(hash.size());
+
+		if (onlyKeys == null)
+			onlyKeys = new ArrayList<String>(hash.keySet());
+
+		for (String key : onlyKeys) {
+			if (hash.containsKey(key)) {
+				String value = hash.getString(key);
+				elements.add(URLEncoderUtil.encode(key) +  "=" + URLEncoderUtil.encode(value));
+			}
+		}
+		return elements.isEmpty() ? "" : "?" + StringUtils.join(elements, "&");
+	}
+
 	private Options getParameterShell() {
 		if (parameterShell == null) {
 			parameterShell = new Options();
@@ -139,7 +155,7 @@ public class Route {
 		if (generationRequirements(options, hash)) {
 			path = segments.get(segments.size() - 1).stringStructure(segments.subList(0, segments.size() - 1), hash);
 		}
-		return path;
+		return appendQueryString(path, hash, extraKeys(options));
 	}
 
 	public boolean generationRequirements(Options options, Options hash) {
@@ -170,5 +186,26 @@ public class Route {
 			actionRequirement = requirementFor("action");
 			matchingPrepared = true;
 		}
+	}
+
+	private String appendQueryString(String path, Options hash, List<String> queryKeys) {
+		if (path == null)
+			return null;
+
+		if (queryKeys == null)
+			queryKeys = extraKeys(hash);
+
+		return path + buildQueryString(hash, queryKeys);
+	}
+
+	private List<String> extraKeys(Options hash) {
+		List<String> extraKeys = new ArrayList<String>();
+		if (hash != null) {
+			for (String key : hash.keySet()) {
+				if (!significantKeys.contains(key))
+					extraKeys.add(key);
+			}
+		}
+		return extraKeys;
 	}
 }

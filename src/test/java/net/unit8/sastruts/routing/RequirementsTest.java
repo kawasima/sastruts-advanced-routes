@@ -39,6 +39,7 @@ public class RequirementsTest {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/requirements.xml"));
 		assertRecognizes("Images#show?width=640&height=480", "/images/640x480");
 		assertGenerates("/images/640x480", "Images#show?width=640&height=480");
+		assertRecognizes("Sample#detail?sampleCd=001", "/sample_001/detail");
 	}
 	@Test
 	public void generate() {

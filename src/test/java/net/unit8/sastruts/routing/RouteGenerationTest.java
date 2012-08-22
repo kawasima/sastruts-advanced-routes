@@ -19,8 +19,10 @@ public class RouteGenerationTest {
 	public void test() {
 		RouteSet routeSet = new RouteSet();
 		Route route = routeSet.addRoute("/blog/:id/comments", new Options().$("controller", "Blog").$("action", "comments"));
-		String url = route.generate(new Options(), new Options().$("controller", "Blog").$("action", "comments").$("id", 8));
-		assertThat(url, is("/blog/8/comments"));
+		Options hash = new Options().$("controller", "Blog").$("action", "comments").$("id", 8).$("other", "parameter");
+		Options options = new Options().$("controller", "Blog").$("action", "comments").$("id", 8).$("other", "parameter");
+		String url = route.generate(options, hash);
+		assertThat(url, is("/blog/8/comments?other=parameter"));
 	}
 
 	@Test

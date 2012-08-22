@@ -11,4 +11,11 @@
 			<requirement name="height" value="\d+"/>
 		</requirements>
 	</match>
+
+	<match path="/sample_(:sampleCd)/detail" to="Sample#detail">
+		<requirements>
+			<requirement name="sampleCd" value="\d+"/>
+		</requirements>
+	</match>
+
 </routes>
