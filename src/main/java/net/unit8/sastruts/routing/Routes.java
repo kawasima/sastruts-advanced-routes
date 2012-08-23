@@ -8,7 +8,10 @@ import java.util.List;
 import net.unit8.sastruts.routing.detector.ClassControllerDetector;
 import net.unit8.sastruts.routing.detector.ComponentControllerDetector;
 
-import org.seasar.framework.container.hotdeploy.HotdeployUtil;
+import org.seasar.framework.container.hotdeploy.HotdeployBehavior;
+import org.seasar.framework.container.impl.S2ContainerBehavior;
+import org.seasar.framework.container.impl.S2ContainerBehavior.Provider;
+import org.seasar.framework.container.warmdeploy.WarmdeployBehavior;
 
 public class Routes {
 	private static volatile List<String> possibleControllers = null;
@@ -40,7 +43,9 @@ public class Routes {
 		if (possibleControllers == null) {
 			synchronized(Routes.class) {
 				if (possibleControllers == null) {
-					ControllerDetector detector = HotdeployUtil.isHotdeploy() ? new ClassControllerDetector() : new ComponentControllerDetector();
+					Provider provider = S2ContainerBehavior.getProvider();
+					ControllerDetector detector = (provider instanceof WarmdeployBehavior || provider instanceof HotdeployBehavior) ?
+							new ClassControllerDetector() : new ComponentControllerDetector();
 					possibleControllers = detector.detect();
 				}
 			}
