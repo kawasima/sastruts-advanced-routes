@@ -107,4 +107,5 @@
 	</dependencies>
 	<groupId>net.unit8.sastruts</groupId>
 	<artifactId>sastruts-advanced-routes</artifactId>
+	<packaging>jar</packaging>
 </project>
