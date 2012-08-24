@@ -75,7 +75,10 @@ public class AdvancedRoutingFilter implements Filter {
 	}
 
 	private void reloadRoutes() {
-		if ((lastLoaded < 0 || System.currentTimeMillis() > lastLoaded + checkInterval * 1000 ) && !loading) {
+		if (loading) {
+			return;
+		}
+		if (lastLoaded < 0 || checkInterval >= 0 && System.currentTimeMillis() > lastLoaded + checkInterval * 1000) {
 			synchronized(this) {
 				if (!loading)
 					loading = true;
