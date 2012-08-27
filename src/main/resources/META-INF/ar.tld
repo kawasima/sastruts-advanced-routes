@@ -1,11 +1,13 @@
 <?xml version="1.0"?>
-<tablib xmlns="http://java.sun.com/xml/ns/j2ee"
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd" version="2.0">
 	<tlib-version>2.0</tlib-version>
+	<short-name>ar</short-name>
+	<uri>http://ar.sastruts.unit8.net</uri>
 	<function>
 		<name>urlFor</name>
 		<function-class>net.unit8.sastruts.UrlRewriter</function-class>
 		<function-signature>java.lang.String urlFor(java.lang.String)</function-signature>
 	</function>
-</tablib>
+</taglib>
