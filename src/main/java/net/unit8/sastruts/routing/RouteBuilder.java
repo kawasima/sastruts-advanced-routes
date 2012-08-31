@@ -77,7 +77,8 @@ public class RouteBuilder {
 
 		if (options.containsKey("namespace")) {
 			String namespace = options.getString("namespace").replace("/$", "");
-			options.put("controller", namespace + "/" + options.get("controller"));
+			options.remove("namespace");
+			options.put("controller", namespace.replace('/', '.') + "." + options.get("controller"));
 		}
 
 		Options requirements = options.takeoutOptions("requirements");

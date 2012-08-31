@@ -1,0 +1,13 @@
+<routes>
+	<namespace name="ns1">
+		<match path="blog/:blogCd" to="Blog#show"/>
+	</namespace>
+
+	<scope name="ns2">
+		<match path="blog/:blogCd" to="Blog#show"/>
+	</scope>
+
+	<scope module="ns3">
+		<match path="blog/:blogCd" to="Blog#show"/>
+	</scope>
+</routes>

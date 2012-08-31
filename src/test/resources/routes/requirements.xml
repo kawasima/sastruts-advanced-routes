@@ -12,6 +12,8 @@
 		</requirements>
 	</match>
 
+	<match path="images/:size" to="Images#size"/>
+
 	<match path="/sample_(:sampleCd)/detail" to="Sample#detail">
 		<requirements>
 			<requirement name="sampleCd" value="\d+"/>

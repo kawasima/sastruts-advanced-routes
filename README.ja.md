@@ -25,7 +25,7 @@ match は基本のルーティング設定で、path属性にマッチすると�
 controllerタグでコントローラごとの設定をまとめることができます。
 
 
-### Namespace
+### Namespaceとルーティング
 
 ルーティングをグループ化するために、namespaceを使うことができます。
 
@@ -34,6 +34,24 @@ controllerタグでコントローラごとの設定をまとめることがで�
 	</namespace>
 
 と書くと、/admin/posts のパスが admin.PostsAction にマッチするようになります。
+
+また、パスには/adminを付けたくないけれども、admin.PostsActionにマッチさせたい場合は、
+
+	<scope module="admin">
+		<match path="posts" to="Posts#index"/>
+	</scope>
+
+とscopeディレクティブとmodule属性を使ってActionに付加するパッケージ名を指定することができます。
+
+逆に、パスに/adminを付けるが、Actionにパッケージ名を付加したくない場合、すなわちコンテキストルートや
+リバースプロキシのパスプリフィックスに対応させるようなケースでは、
+
+	<scope name="admin">
+		<match path="posts" to="Posts#index"/>
+	</scope>
+
+と書きます。
+
 
 ### 特別なパラメータ
 

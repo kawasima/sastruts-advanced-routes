@@ -24,6 +24,8 @@ import org.xml.sax.helpers.DefaultHandler;
 public class RouteLoader extends DefaultHandler {
 	private String controller = null;
 	private String namespace = null;
+	private String pathScope = null;
+	private String moduleScope = null;
 	private Locator locator;
 	private RouteBuilder builder;
 	private Options options;
@@ -79,6 +81,12 @@ public class RouteLoader extends DefaultHandler {
 			if (StringUtil.isEmpty(namespace)) {
 				throw new SAXParseException("Can't find namespace's name.", locator);
 			}
+		} else if (qName.equalsIgnoreCase("scope")) {
+			pathScope = attributes.getValue("name");
+			moduleScope = attributes.getValue("module");
+			if (StringUtil.isEmpty(pathScope) && StringUtil.isEmpty(moduleScope)) {
+				throw new SAXParseException("Scope must have any attributes, name or module.", locator);
+			}
 		} else if (qName.equalsIgnoreCase("requirements")) {
 			options.$("requirements", new Options());
 		} else if (qName.equalsIgnoreCase("requirement")) {
@@ -111,6 +119,8 @@ public class RouteLoader extends DefaultHandler {
 			controller = null;
 		} else if (qName.equalsIgnoreCase("namespace")) {
 			namespace = null;
+		} else if (qName.equalsIgnoreCase("scope")) {
+			pathScope = moduleScope = null;
 		}
 	}
 
@@ -150,6 +160,16 @@ public class RouteLoader extends DefaultHandler {
 		}
 		if (controller != null) {
 			options.put("controller", controller);
+		}
+		if (namespace != null) {
+			options.put("namespace", namespace);
+			options.put("pathPrefix", namespace);
+		}
+		if (pathScope != null) {
+			options.put("pathPrefix", pathScope);
+		}
+		if (moduleScope != null) {
+			options.put("namespace", moduleScope);
 		}
 		return options;
 	}
