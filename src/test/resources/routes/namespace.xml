@@ -1,5 +1,5 @@
 <routes>
-	<namespace name="ns1">
+	<namespace name="ns1/ns2">
 		<match path="blog/:blogCd" to="Blog#show"/>
 	</namespace>
 

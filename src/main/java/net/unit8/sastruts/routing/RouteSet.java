@@ -80,12 +80,22 @@ public class RouteSet {
 		}
 		List<Route> routes = routesByController(controller, action);
 		for(Route route : routes) {
+			if (!hasAllKey(route, options))
+				continue;
 			String results = route.generate(options, merged);
 			if (StringUtils.isNotEmpty(results)) {
 				return results;
 			}
 		}
 		throw new RoutingException("No route matches " + options.toString());
+	}
+
+	private boolean hasAllKey(Route route, Options options) {
+		for (String key : route.significantKeys()) {
+			if (!options.containsKey(key))
+				return false;
+		}
+		return true;
 	}
 
 	private List<Route> routesByController(String controller, String action) {

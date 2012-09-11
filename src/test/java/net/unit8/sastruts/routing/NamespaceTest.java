@@ -15,7 +15,7 @@ public class NamespaceTest {
 	public void test() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/namespace.xml"));
 		System.out.println(Routes.getRouteSet().toString());
-		assertRecognizes("ns1.Blog#show?blogCd=01", "/ns1/blog/01");
+		assertRecognizes("ns1.ns2.Blog#show?blogCd=01", "/ns1/ns2/blog/01");
 		assertRecognizes("Blog#show?blogCd=01", "/ns2/blog/01");
 		assertRecognizes("ns3.Blog#show?blogCd=01", "/blog/01");
 	}

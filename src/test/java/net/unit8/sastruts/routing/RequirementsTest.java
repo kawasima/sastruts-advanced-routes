@@ -41,11 +41,20 @@ public class RequirementsTest {
 		assertGenerates("/images/640x480", "Images#show?width=640&height=480");
 		assertRecognizes("Sample#detail?sampleCd=001", "/sample_001/detail");
 		assertRecognizes("Images#size?size=1024", "/images/1024");
+		assertRecognizes("Images#size?size=sacd", "/images/sacd");
 	}
 	@Test
 	public void generate() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/requirements.xml"));
 		String path = Routes.generate(new Options().$("controller", "Posts").$("action", "index").$("year", "2012").$("month","11"));
 		assertThat(path, is("/posts/2012/11"));
+	}
+
+	@Test
+	public void generateSameAction() {
+		Routes.load(ResourceUtil.getResourceAsFile("routes/requirements.xml"));
+		assertGenerates("/area_01/zip_03", "sample.Hoge#index?area=01&zip=03");
+		assertGenerates("/area_01/addr_04", "sample.Hoge#index?area=01&addr=04");
+		assertGenerates("/area_01/addr_04?zip=03", "sample.Hoge#index?area=01&addr=04&zip=03");
 	}
 }

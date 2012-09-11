@@ -20,4 +20,16 @@
 		</requirements>
 	</match>
 
+	<match path="/area_(:area)/addr_(:addr)" controller="sample.Hoge" action="index">
+		<requirements>
+			<requirement name="area" value="\d+"/>
+			<requirement name="addr" value="\d+"/>
+		</requirements>
+	</match>
+	<match path="/area_(:area)/zip_(:zip)" controller="sample.Hoge" action="index">
+		<requirements>
+			<requirement name="area" value="\d+"/>
+			<requirement name="zip" value="\d+"/>
+		</requirements>
+	</match>
 </routes>
