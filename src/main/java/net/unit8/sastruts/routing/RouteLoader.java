@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.SAXParser;
@@ -23,9 +24,8 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class RouteLoader extends DefaultHandler {
 	private String controller = null;
-	private String namespace = null;
-	private String pathScope = null;
-	private String moduleScope = null;
+	private Stack<String> pathScope = new Stack<String>();
+	private Stack<String> moduleScope = new Stack<String>();
 	private Locator locator;
 	private RouteBuilder builder;
 	private Options options;
@@ -77,16 +77,20 @@ public class RouteLoader extends DefaultHandler {
 			Options options = processAttributes(attributes);
 			routes.add(builder.build("/", options));
 		} else if (qName.equalsIgnoreCase("namespace")) {
-			namespace = attributes.getValue("name");
-			if (StringUtil.isEmpty(namespace)) {
+			String name = attributes.getValue("name");
+			if (StringUtil.isEmpty(name)) {
 				throw new SAXParseException("Can't find namespace's name.", locator);
 			}
+			pathScope.push(name);
+			moduleScope.push(name);
 		} else if (qName.equalsIgnoreCase("scope")) {
-			pathScope = attributes.getValue("name");
-			moduleScope = attributes.getValue("module");
-			if (StringUtil.isEmpty(pathScope) && StringUtil.isEmpty(moduleScope)) {
+			String name = StringUtils.defaultIfEmpty(attributes.getValue("name"), "");
+			String module = StringUtils.defaultIfEmpty(attributes.getValue("module"), "");
+			if (StringUtil.isEmpty(name) && StringUtil.isEmpty(module)) {
 				throw new SAXParseException("Scope must have any attributes, name or module.", locator);
 			}
+			pathScope.push(name);
+			moduleScope.push(module);
 		} else if (qName.equalsIgnoreCase("requirements")) {
 			options.$("requirements", new Options());
 		} else if (qName.equalsIgnoreCase("requirement")) {
@@ -107,7 +111,7 @@ public class RouteLoader extends DefaultHandler {
 			String name = attributes.getValue("name");
 			String value = attributes.getValue("value");
 			defaults.$(name, value);
-	}
+		}
 	}
 
 	@Override
@@ -117,10 +121,9 @@ public class RouteLoader extends DefaultHandler {
 			options = null;
 		} else if (qName.equalsIgnoreCase("controller")) {
 			controller = null;
-		} else if (qName.equalsIgnoreCase("namespace")) {
-			namespace = null;
-		} else if (qName.equalsIgnoreCase("scope")) {
-			pathScope = moduleScope = null;
+		} else if (qName.equalsIgnoreCase("namespace") || qName.equalsIgnoreCase("scope")) {
+			pathScope.pop();
+			moduleScope.pop();
 		}
 	}
 
@@ -161,15 +164,15 @@ public class RouteLoader extends DefaultHandler {
 		if (controller != null) {
 			options.put("controller", controller);
 		}
-		if (namespace != null) {
-			options.put("namespace", namespace);
-			options.put("pathPrefix", namespace);
+		if (!pathScope.empty()) {
+			String pathPrefix = StringUtils.strip(StringUtils.join(pathScope, '/').replaceAll("/+", "/"), "/");
+			if (!StringUtils.isEmpty(pathPrefix) && !StringUtils.equals(pathPrefix, "/"))
+				options.put("pathPrefix", pathPrefix);
 		}
-		if (pathScope != null) {
-			options.put("pathPrefix", pathScope);
-		}
-		if (moduleScope != null) {
-			options.put("namespace", moduleScope);
+		if (!moduleScope.empty()) {
+			String namespace = StringUtils.strip(StringUtils.join(moduleScope, '/').replaceAll("/+", "/"), "/");
+			if (!StringUtils.isEmpty(namespace) && !StringUtils.equals(namespace, "/"))
+				options.put("namespace", namespace);
 		}
 		return options;
 	}

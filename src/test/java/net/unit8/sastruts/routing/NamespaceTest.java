@@ -20,4 +20,9 @@ public class NamespaceTest {
 		assertRecognizes("ns3.Blog#show?blogCd=01", "/blog/01");
 	}
 
+	@Test
+	public void testNest() {
+		Routes.load(ResourceUtil.getResourceAsFile("routes/namespace.xml"));
+		assertRecognizes("ns4.ns5.Blog2#show?blogCd=01", "/ns4/ns5/ns6/blog2/01");
+	}
 }

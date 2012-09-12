@@ -10,4 +10,10 @@
 	<scope module="ns3">
 		<match path="blog/:blogCd" to="Blog#show"/>
 	</scope>
+
+	<namespace name="ns4/ns5">
+		<scope name="ns6">
+			<match path="blog2/:blogCd" to="Blog2#show"/>
+		</scope>
+	</namespace>
 </routes>

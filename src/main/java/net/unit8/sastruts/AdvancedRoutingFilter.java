@@ -117,6 +117,8 @@ public class AdvancedRoutingFilter implements Filter {
 		reloadRoutes();
 
 		if (path.indexOf('.') < 0) {
+			// If the request pass via reverse proxy, the original path must be gotten from HTTP header.
+			path = RequestUtil.getRequest().getRequestURI();
 			Options options = Routes.recognizePath(path);
 			String controller = options.getString("controller");
 			String action = options.getString("action");
