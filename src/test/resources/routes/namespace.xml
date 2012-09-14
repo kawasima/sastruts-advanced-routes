@@ -1,5 +1,5 @@
 <routes>
-	<namespace name="ns1/ns2">
+	<namespace name="ns1/ns2" conditions="#ENV == 'ct'">
 		<match path="blog/:blogCd" to="Blog#show"/>
 	</namespace>
 

@@ -45,6 +45,7 @@ public class UrlRewriter {
 				if (pair.length == 1) {
 					options.$(pair[0], null);
 				} else if (pair.length == 2) {
+					// FIXME Currently only the last value is effective multiple values in same key.
 					options.$(pair[0], pair[1]);
 				}
 			}
