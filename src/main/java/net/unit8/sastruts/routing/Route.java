@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.struts.util.RequestUtil;
-import org.seasar.struts.util.URLEncoderUtil;
 
 public class Route {
 	private List<Segment> segments;
@@ -123,8 +122,7 @@ public class Route {
 
 		for (String key : onlyKeys) {
 			if (hash.containsKey(key)) {
-				String value = hash.getString(key);
-				elements.add(URLEncoderUtil.encode(key) +  "=" + URLEncoderUtil.encode(value));
+				elements.add(hash.getUrlEncodedString(key));
 			}
 		}
 		return elements.isEmpty() ? "" : "?" + StringUtils.join(elements, "&");

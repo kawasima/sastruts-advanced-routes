@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.IntegerConversionUtil;
+import org.seasar.framework.util.StringConversionUtil;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.struts.util.URLEncoderUtil;
 
@@ -34,6 +36,21 @@ public class Options extends HashMap<String, Object>{
 		return value == null ? "" : value.toString();
 	}
 
+	public String getUrlEncodedString(String key) {
+		Object value = this.get(key);
+		if (value == null) {
+			return "";
+		} else if (value instanceof Collection) {
+			Collection<?> values = Collection.class.cast(value);
+			List<String> pairs = new ArrayList<String>(values.size());
+			for (Object val : values) {
+				pairs.add(URLEncoderUtil.encode(key) +  "=" + URLEncoderUtil.encode(StringConversionUtil.toString(val)));
+			}
+			return StringUtils.join(pairs, "&");
+		} else {
+			return URLEncoderUtil.encode(key) + "=" + URLEncoderUtil.encode(StringConversionUtil.toString(value));
+		}
+	}
 	@SuppressWarnings("unchecked")
 	public List<Object> getList(String key) {
 		Object value = this.get(key);

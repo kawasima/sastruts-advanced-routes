@@ -1,5 +1,8 @@
 package net.unit8.sastruts;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import net.unit8.sastruts.routing.Options;
@@ -8,6 +11,7 @@ import net.unit8.sastruts.routing.Routes;
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.container.SingletonS2Container;
 import org.seasar.framework.convention.NamingConvention;
+import org.seasar.framework.util.StringConversionUtil;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.struts.config.S2ExecuteConfig;
 import org.seasar.struts.util.S2ExecuteConfigUtil;
@@ -45,8 +49,16 @@ public class UrlRewriter {
 				if (pair.length == 1) {
 					options.$(pair[0], null);
 				} else if (pair.length == 2) {
-					// FIXME Currently only the last value is effective multiple values in same key.
-					options.$(pair[0], pair[1]);
+					Object value = options.get(pair[0]);
+					if (value == null) {
+						options.$(pair[0], pair[1]);
+					} else if (value instanceof ArrayList) {
+						((ArrayList<String>)value).add(pair[1]);
+					} else {
+						List<String> values = new ArrayList<String>();
+						values.add(StringConversionUtil.toString(value));
+						options.$(pair[0], values);
+					}
 				}
 			}
 		}
