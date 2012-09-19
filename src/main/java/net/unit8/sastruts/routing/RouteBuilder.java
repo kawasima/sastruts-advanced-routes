@@ -171,9 +171,6 @@ public class RouteBuilder {
 		if (path.charAt(0) != '/')
 			path = "/" + path;
 
-		if (path.charAt(path.length() - 1) != '/')
-			path = path + "/";
-
 		String prefix = options.getString("pathPrefix").replace("^/", "");
 		if (StringUtil.isNotBlank(prefix))
 			path = "/" + prefix + path;

@@ -185,6 +185,10 @@ web.xmlにて、次のようにroutingfilterを設定されているところを
 			<param-name>checkInterval</param-name>
 			<param-value>-1</param-value>
 		</init-param>
+		<init-param>
+			<param-name>contextSensitive</param-name>
+			<param-value>false</param-value>
+		</init-param>
 	</filter>
 
 追加されているパラメータについて説明します。
@@ -195,6 +199,10 @@ checkInterval は、ルート定義ファイルの更新をチェックしにい
 定義ファイルをリロードします。0を設定すると常に更新チェックするようになりますが、これは負荷が高いため本番環境では
 避けるようにしてください。このパラメータを設定しない、またはマイナスの値を設定すると更新チェック自体がおこなわれず、
 アプリケーションを再起動しない限りルート定義はリロードされません。
+
+contextSensitive は、コンテキストパスを意識したマッチング/パス生成するかどうかのフラグです。これがtrueの場合は、
+コンテキストパスより後ろのパスを使ってルートのマッチングをし、UrlRewriterを使ってパスを生成する際に自動的に
+コンテキストパスが補われるようになります。デフォルトはfalseです。
 
 ## License
 

@@ -49,9 +49,14 @@ public class AdvancedRoutingFilter implements Filter {
 	 */
 	protected Long checkInterval;
 
+	/**
+	 * If contextSensitive is true, recognize the path after context path and generate the path with context path.
+	 */
+	protected boolean contextSensitive = false;
+
 	public void init(FilterConfig config) throws ServletException {
 		String access = config.getInitParameter("jspDirectAccess");
-		if (!StringUtil.isBlank(access)) {
+		if (StringUtil.isNotBlank(access)) {
 			jspDirectAccess = Boolean.valueOf(access);
 		}
 
@@ -68,6 +73,14 @@ public class AdvancedRoutingFilter implements Filter {
 		}
 		if (checkInterval == null || checkInterval < 0) {
 			checkInterval = -1L;
+		}
+
+		String contextSensitiveParam = config.getInitParameter("contextSensitive");
+		if (StringUtil.isNotBlank(contextSensitiveParam)) {
+			contextSensitive = Boolean.valueOf(contextSensitiveParam);
+		}
+		if (contextSensitive) {
+			UrlRewriter.contextPath = config.getServletContext().getContextPath();
 		}
 	}
 
@@ -118,7 +131,8 @@ public class AdvancedRoutingFilter implements Filter {
 
 		if (path.indexOf('.') < 0) {
 			// If the request pass via reverse proxy, the original path must be gotten from HTTP header.
-			path = RequestUtil.getRequest().getRequestURI();
+			if (!contextSensitive)
+				path = req.getRequestURI();
 			Options options = Routes.recognizePath(path);
 			String controller = options.getString("controller");
 			String action = options.getString("action");

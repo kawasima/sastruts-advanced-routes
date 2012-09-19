@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.unit8.sastruts.routing.segment.DividerSegment;
+
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.struts.util.RequestUtil;
@@ -151,7 +153,12 @@ public class Route {
 	public String generate(Options options, Options hash) {
 		String path = null;
 		if (generationRequirements(options, hash)) {
-			path = segments.get(segments.size() - 1).stringStructure(segments.subList(0, segments.size() - 1), hash);
+			int lastIndex = segments.size() - 1;
+			Segment last = segments.get(lastIndex);
+			path = last.stringStructure(segments.subList(0, lastIndex), hash);
+			if (last instanceof DividerSegment && StringUtils.equals(last.getValue(), "/")) {
+				path = path + "/";
+			}
 		}
 		return appendQueryString(path, hash, extraKeys(options));
 	}

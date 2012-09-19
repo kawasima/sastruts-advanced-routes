@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 import net.unit8.sastruts.routing.Options;
+import net.unit8.sastruts.routing.Routes;
 import net.unit8.sastruts.testapp.action.UserAction;
 import net.unit8.sastruts.testapp.action.admin.ProofAction;
 
@@ -11,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.annotation.RegisterNamingConvention;
+import org.seasar.framework.util.ResourceUtil;
 import org.seasar.framework.util.tiger.ReflectionUtil;
 import org.seasar.struts.config.S2ExecuteConfig;
 import org.seasar.struts.util.S2ExecuteConfigUtil;
@@ -47,6 +49,15 @@ public class UrlRewriterTest {
 		assertThat(options.getString("controller"), is("admin.Proof"));
 		assertThat(options.getString("action"), is("index"));
 		assertThat(options.getString("id"), is("1"));
+	}
+
+	@Test
+	public void testGenerateOption() {
+		Routes.load(ResourceUtil.getResourceAsFile("routes/testutil.xml"));
+		assertThat(UrlRewriter.urlFor("my#account"), is("/my/account"));
+		assertThat(UrlRewriter.urlFor("my#account?trailing_slash=true"), is("/my/account/"));
+		assertThat(UrlRewriter.urlFor("my#account?trailing_slash=false"), is("/my/account"));
+		assertThat(UrlRewriter.urlFor("my#account?anchor=p3"), is("/my/account#p3"));
 	}
 
 }
