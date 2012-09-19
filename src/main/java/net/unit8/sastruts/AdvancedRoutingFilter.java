@@ -54,6 +54,11 @@ public class AdvancedRoutingFilter implements Filter {
 	 */
 	protected boolean contextSensitive = false;
 
+	/**
+	 *
+	 */
+	protected String requestUriHeader;
+
 	public void init(FilterConfig config) throws ServletException {
 		String access = config.getInitParameter("jspDirectAccess");
 		if (StringUtil.isNotBlank(access)) {
@@ -82,6 +87,7 @@ public class AdvancedRoutingFilter implements Filter {
 		if (contextSensitive) {
 			UrlRewriter.contextPath = config.getServletContext().getContextPath();
 		}
+		requestUriHeader = config.getInitParameter("requestUriHeader");
 	}
 
 	public void destroy() {
@@ -132,7 +138,7 @@ public class AdvancedRoutingFilter implements Filter {
 		if (path.indexOf('.') < 0) {
 			// If the request pass via reverse proxy, the original path must be gotten from HTTP header.
 			if (!contextSensitive)
-				path = req.getRequestURI();
+				path = StringUtil.isEmpty(requestUriHeader) ? req.getRequestURI() : req.getHeader(requestUriHeader);
 			Options options = Routes.recognizePath(path);
 			String controller = options.getString("controller");
 			String action = options.getString("action");
