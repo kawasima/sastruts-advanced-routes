@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.Routes;
 
+import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
 import org.seasar.framework.log.Logger;
@@ -25,6 +26,12 @@ import org.seasar.struts.util.RequestUtil;
 import org.seasar.struts.util.S2ExecuteConfigUtil;
 import org.seasar.struts.util.URLEncoderUtil;
 
+/**
+ * Routing filter like Ruby on Rails.
+ *
+ * @author kawasima
+ *
+ */
 public class AdvancedRoutingFilter implements Filter {
 	private static final Logger logger = Logger.getLogger(AdvancedRoutingFilter.class);
 	private static volatile boolean loading = false;
@@ -55,7 +62,8 @@ public class AdvancedRoutingFilter implements Filter {
 	protected boolean contextSensitive = false;
 
 	/**
-	 *
+	 * Header name stands for request-uri.
+	 * This parameter is used with a reverse proxy.
 	 */
 	protected String requestUriHeader;
 
@@ -137,8 +145,9 @@ public class AdvancedRoutingFilter implements Filter {
 
 		if (path.indexOf('.') < 0) {
 			// If the request pass via reverse proxy, the original path must be gotten from HTTP header.
-			if (!contextSensitive)
-				path = StringUtil.isEmpty(requestUriHeader) ? req.getRequestURI() : req.getHeader(requestUriHeader);
+			if (!contextSensitive) {
+				path = getOriginalPath(req);
+			}
 			Options options = Routes.recognizePath(path);
 			String controller = options.getString("controller");
 			String action = options.getString("action");
@@ -230,4 +239,18 @@ public class AdvancedRoutingFilter implements Filter {
 		request.getRequestDispatcher(forwardPath).forward(request, response);
 	}
 
+	protected String getOriginalPath(HttpServletRequest req) {
+		String path = StringUtil.isEmpty(requestUriHeader) ? req.getRequestURI() : req.getHeader(requestUriHeader);
+		if (path == null)
+			return "";
+
+		int len = path.length();
+		int i=0;
+		for (; i < len; i++)
+			if (path.charAt(i) == '?' || path.charAt(i) == ';')
+				break;
+		if (i != len)
+			path = StringUtils.substring(path, 0, i);
+		return path;
+	}
 }

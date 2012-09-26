@@ -4,15 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.Routes;
 
 import org.apache.commons.lang.StringUtils;
+import org.seasar.framework.container.ComponentNotFoundRuntimeException;
 import org.seasar.framework.container.SingletonS2Container;
 import org.seasar.framework.convention.NamingConvention;
 import org.seasar.framework.util.StringConversionUtil;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.struts.config.S2ExecuteConfig;
+import org.seasar.struts.util.RequestUtil;
+import org.seasar.struts.util.ResponseUtil;
 import org.seasar.struts.util.S2ExecuteConfigUtil;
 import org.seasar.struts.util.URLEncoderUtil;
 
@@ -46,7 +52,16 @@ public class UrlRewriter {
 		if (StringUtils.isNotEmpty(contextPath))
 			url.append(contextPath);
 		String generated = Routes.generate(options);
-		url.append(trailingSlash ? trailingSlash(generated) : generated);
+		String path = trailingSlash ? trailingSlash(generated) : generated;
+		try {
+			HttpServletResponse response = ResponseUtil.getResponse();
+			HttpSession session = RequestUtil.getRequest().getSession(false);
+			if (session != null)
+				path = response.encodeURL(path);
+		} catch (ComponentNotFoundRuntimeException e) {
+			// If not use in webapp, ignore the process of encode url.
+		}
+		url.append(path);
 		if (!StringUtils.isEmpty(anchor))
 			url.append(anchor);
 		return url.toString();

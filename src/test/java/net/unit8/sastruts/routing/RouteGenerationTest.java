@@ -1,20 +1,14 @@
 package net.unit8.sastruts.routing;
 
-import java.util.Arrays;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-import net.unit8.sastruts.routing.Options;
-import net.unit8.sastruts.routing.Route;
-import net.unit8.sastruts.routing.RouteSet;
+import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.annotation.RegisterNamingConvention;
-
-import antlr.collections.List;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
 
 @RunWith(Seasar2.class)
 @RegisterNamingConvention(false)
