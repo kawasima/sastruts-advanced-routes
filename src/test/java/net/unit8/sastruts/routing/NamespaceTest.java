@@ -1,6 +1,6 @@
 package net.unit8.sastruts.routing;
 
-import static net.unit8.sastruts.routing.RoutingTestUtil.assertRecognizes;
+import static net.unit8.sastruts.routing.RoutingTestUtil.*;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,5 +24,11 @@ public class NamespaceTest {
 	public void testNest() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/namespace.xml"));
 		assertRecognizes("ns4.ns5.Blog2#show?blogCd=01", "/ns4/ns5/ns6/blog2/01");
+	}
+
+	@Test
+	public void testRoot() {
+		Routes.load(ResourceUtil.getResourceAsFile("routes/namespace.xml"));
+		assertGenerates("/", "Index#index");
 	}
 }

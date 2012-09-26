@@ -1,5 +1,5 @@
 <routes>
-	<root to="index#index"/>
+	<root to="Index#index"/>
 	<match path="/user/list" controller="admin.User" action="index"/>
 	<match path="/user/:id" controller="admin.User" action="show"/>
 	<controller name="blog">

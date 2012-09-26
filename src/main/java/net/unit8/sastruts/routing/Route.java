@@ -151,16 +151,16 @@ public class Route {
 	}
 
 	public String generate(Options options, Options hash) {
-		String path = null;
 		if (generationRequirements(options, hash)) {
 			int lastIndex = segments.size() - 1;
 			Segment last = segments.get(lastIndex);
-			path = last.stringStructure(segments.subList(0, lastIndex), hash);
-			if (last instanceof DividerSegment && StringUtils.equals(last.getValue(), "/")) {
+			String path = last.stringStructure(segments.subList(0, lastIndex), hash);
+			if (segments.size() > 1 && last instanceof DividerSegment && StringUtils.equals(last.getValue(), "/")) {
 				path = path + "/";
 			}
+			return appendQueryString(path, hash, extraKeys(options));
 		}
-		return appendQueryString(path, hash, extraKeys(options));
+		return null;
 	}
 
 	public boolean generationRequirements(Options options, Options hash) {

@@ -33,7 +33,6 @@ public class RouteGenerationTest {
 		assertThat(url, is("/blog/8/comments?other=parameter&other=parameter2"));
 	}
 
-
 	@Test
 	public void testController() {
 		RouteSet routeSet = new RouteSet();
