@@ -214,16 +214,16 @@ ApacheでURLをリライトした後にTomcatにリクエスト転送するの�
 しかし、Tomcat側からは転送されてきたURLしか分からないので、Apache側から当初のリクエストURLも送ってもらう必要があります。これは、mod_rewrite
 の設定で、以下のようにREQUEST_URIをリクエストヘッダに入れて、Tomcat側に転送することで実現できます。
 
-   RewriteEngine On
-   RewriteRule .* - [E=X_REQUEST_URI:%{REQUEST_URI}]
-   RequestHeader set X-Request-URI "%{X_REQUEST_URI}e"
+    RewriteEngine On
+    RewriteRule .* - [E=X_REQUEST_URI:%{REQUEST_URI}]
+    RequestHeader set X-Request-URI "%{X_REQUEST_URI}e"
 
 Advanced Routesでは、以下のような設定をしておくと、このヘッダからREQUEST_URIを取得するようになります。
 
-   <init-param>
+    <init-param>
        <param-name>requestUriHeader</param-name>
        <param-value>X-Request-URI</param-value>
-   </init-param>
+    </init-param>
 
 ## License
 
