@@ -204,6 +204,27 @@ contextSensitive は、コンテキストパスを意識したマッチング/�
 コンテキストパスより後ろのパスを使ってルートのマッチングをし、UrlRewriterを使ってパスを生成する際に自動的に
 コンテキストパスが補われるようになります。デフォルトはfalseです。
 
+### contextSensitiveについて
+
+SAStruts標準のルーティング以上のことを、このAdvanced Routesを使って実現したいということは、コンテキストパス自身も邪魔になることが多いでしょう。
+したがってcontextSensitive パラメータのデフォルトもfalse になっている訳ですが、さらに言うと大抵はApache - Tomcat の構成となっており、
+ApacheでURLをリライトした後にTomcatにリクエスト転送するので、Tomcatで受け取るURLなんて意識せず、Apacheで受けたまんまのURLでルート定義を
+書けると素敵です。
+
+しかし、Tomcat側からは転送されてきたURLしか分からないので、Apache側から当初のリクエストURLも送ってもらう必要があります。これは、mod_rewrite
+の設定で、以下のようにREQUEST_URIをリクエストヘッダに入れて、Tomcat側に転送することで実現できます。
+
+   RewriteEngine On
+   RewriteRule .* - [E=X_REQUEST_URI:%{REQUEST_URI}]
+   RequestHeader set X-Request-URI "%{X_REQUEST_URI}e"
+
+Advanced Routesでは、以下のような設定をしておくと、このヘッダからREQUEST_URIを取得するようになります。
+
+   <init-param>
+       <param-name>requestUriHeader</param-name>
+       <param-value>X-Request-URI</param-value>
+   </init-param>
+
 ## License
 
 SAStruts Advanced Routes はApache License 2.0 の元に配布されます。
