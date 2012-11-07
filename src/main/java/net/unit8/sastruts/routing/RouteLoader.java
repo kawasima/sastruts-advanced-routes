@@ -131,6 +131,7 @@ public class RouteLoader extends DefaultHandler {
 	public void characters(char[] ch, int start, int length) throws SAXException {
 	}
 
+	@SuppressWarnings("unchecked")
 	private Options processAttributes(Attributes attributes) {
 		int attrLen = attributes.getLength();
 		Options options = new Options();
@@ -148,13 +149,21 @@ public class RouteLoader extends DefaultHandler {
 			} else if (StringUtils.equals(optionName, "via")){
 				String[] methods = StringUtils.split(attributes.getValue(i), ",");
 				for (String method : methods) {
-					if (Routes.HTTP_METHODS.contains(method.toUpperCase())) {
+					if (Routes.HTTP_METHODS.contains(method.trim().toUpperCase())) {
 						Options conditions = (Options)options.get("conditions");
 						if (conditions == null) {
 							conditions = new Options();
 							options.put("conditions", conditions);
 						}
-						conditions.$("method", method.toUpperCase());
+
+						List<String> methodList;
+						if (!conditions.containsKey("method")) {
+							methodList = new ArrayList<String>();
+							conditions.$("method", methodList);
+						} else {
+							methodList = (List<String>) conditions.get("method");
+						}
+						methodList.add(method.trim().toUpperCase());
 					}
 				}
 			} else {

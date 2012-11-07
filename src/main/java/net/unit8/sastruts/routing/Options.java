@@ -58,9 +58,11 @@ public class Options extends HashMap<String, Object>{
 			return new ArrayList<Object>();
 		}
 		List<Object> valueList = null;
-		if (value.getClass().isArray()) {
+		if (List.class.isAssignableFrom(value.getClass())) {
+			valueList = (List<Object>) value;
+		} else if (value.getClass().isArray()) {
 			valueList = Arrays.asList((Object[])value);
-		} else if (value.getClass().isAssignableFrom(Collection.class)) {
+		} else if (Collection.class.isAssignableFrom(value.getClass())) {
 			valueList = new ArrayList<Object>(Collection.class.cast(value));
 		} else {
 			valueList = new ArrayList<Object>(1);
