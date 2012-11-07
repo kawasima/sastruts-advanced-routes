@@ -1,7 +1,9 @@
 <!--
 	This routes config is transported from Redmine2.
  -->
-<routes>
+<routes xmlns="http://unit8.net/ns/sastruts-advanced-routes"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://unit8.net/ns/sastruts-advanced-routes http://unit8.net/ns/sastruts-advanced-routes/routes_0_1.xsd">
 	<root to="Welcome#index"/>
 	<match path="login" to="Account#login"/>
 	<match path="logout" to="Account#logout"/>

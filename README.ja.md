@@ -96,6 +96,27 @@ namespaceの中で:controllerセグメントを使うことはできません。
 
 というパラメータ構成になります。
 
+### マッチング
+
+パラメータが特定の形式の場合だけ、ルーティングさせたいという場合は、以下のように正規表現によるマッチングが可能です。
+
+	<match path="posts/:year/:month" to="Posts#index">
+		<requirements>
+			<requirement name="year" value="\d{4}" />
+		</requirements>
+	</match>
+
+この場合、yearパラメータが数字4桁の場合だけ、Posts#indexにルーティングされるようになります。
+
+また、マッチングパラメータは1つのパスセグメントの中に複数持つことができます。その場合はパラメータを括弧で囲ってください。
+
+	<match path="images/(:width)x(:height)" to="Images#show">
+		<requirements>
+			<requirement name="width" value="\d+"/>
+			<requirement name="height" value="\d+"/>
+		</requirements>
+	</match>
+
 ### デフォルト
 
 パラメータがパス要素として渡されない場合に、パラメータにデフォルト値を設定できます。

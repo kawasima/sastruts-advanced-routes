@@ -1,5 +1,11 @@
-<routes>
+<routes xmlns="http://unit8.net/ns/sastruts-advanced-routes"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://unit8.net/ns/sastruts-advanced-routes http://unit8.net/ns/sastruts-advanced-routes/routes_0_1.xsd">
 	<match path="photos/:id.:format" to="Photos#show">
+		<requirements>
+			<requirement name="hoge" value="huge"/>
+			<requirement name="hoge" value="huge"/>
+		</requirements>
 		<defaults>
 			<default name="id" value="100"/>
 			<default name="format" value="jpg" />

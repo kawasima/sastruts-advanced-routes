@@ -1,4 +1,6 @@
-<routes>
+<routes xmlns="http://unit8.net/ns/sastruts-advanced-routes"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://unit8.net/ns/sastruts-advanced-routes http://unit8.net/ns/sastruts-advanced-routes/routes_0_1.xsd">
 	<root to="Index#index"/>
 	<namespace name="ns1/ns2" conditions="#ENV == 'ct'">
 		<match path="blog/:blogCd" to="Blog#show"/>
