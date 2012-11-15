@@ -131,7 +131,6 @@ public class RouteLoader extends DefaultHandler {
 	public void characters(char[] ch, int start, int length) throws SAXException {
 	}
 
-	@SuppressWarnings("unchecked")
 	private Options processAttributes(Attributes attributes) {
 		int attrLen = attributes.getLength();
 		Options options = new Options();
@@ -156,12 +155,12 @@ public class RouteLoader extends DefaultHandler {
 							options.put("conditions", conditions);
 						}
 
-						List<String> methodList;
+						List<Object> methodList;
 						if (!conditions.containsKey("method")) {
-							methodList = new ArrayList<String>();
+							methodList = new ArrayList<Object>();
 							conditions.$("method", methodList);
 						} else {
-							methodList = (List<String>) conditions.get("method");
+							methodList = conditions.getList("method");
 						}
 						methodList.add(method.trim().toUpperCase());
 					}
