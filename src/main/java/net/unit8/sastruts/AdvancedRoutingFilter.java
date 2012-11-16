@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.Routes;
+import net.unit8.sastruts.routing.segment.RoutingException;
 
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.container.S2Container;
@@ -148,32 +149,36 @@ public class AdvancedRoutingFilter implements Filter {
 			if (!contextSensitive) {
 				path = getOriginalPath(req);
 			}
-			Options options = Routes.recognizePath(path);
-			String controller = options.getString("controller");
-			String action = options.getString("action");
-			Options params = options.except("controller", "action");
+			try {
+				Options options = Routes.recognizePath(path);
+				String controller = options.getString("controller");
+				String action = options.getString("action");
+				Options params = options.except("controller", "action");
 
-			String actionPath = ControllerUtil.fromClassNameToPath(controller);
-			S2Container container = SingletonS2ContainerFactory.getContainer();
-			if (container.hasComponentDef(actionPath.replace('/', '_').concat("Action"))) {
-				S2ExecuteConfig executeConfig;
-				if (StringUtil.equals(action, "index")) {
-					executeConfig = S2ExecuteConfigUtil.findExecuteConfig("/" + actionPath, req);
-					action = executeConfig.getMethod().getName();
-				} else {
-					executeConfig = S2ExecuteConfigUtil.findExecuteConfig("/" + actionPath, action);
-				}
-				if (executeConfig != null) {
-					StringBuilder forwardPath = new StringBuilder(256);
-					forwardPath.append("/").append(actionPath).append(".do?SAStruts.method=").append(URLEncoderUtil.encode(action));
-					for(String key : params.keySet()) {
-						forwardPath.append("&").append(URLEncoderUtil.encode(key))
-							.append("=").append(URLEncoderUtil.encode(params.getString(key)));
+				String actionPath = ControllerUtil.fromClassNameToPath(controller);
+				S2Container container = SingletonS2ContainerFactory.getContainer();
+				if (container.hasComponentDef(actionPath.replace('/', '_').concat("Action"))) {
+					S2ExecuteConfig executeConfig;
+					if (StringUtil.equals(action, "index")) {
+						executeConfig = S2ExecuteConfigUtil.findExecuteConfig("/" + actionPath, req);
+						action = executeConfig.getMethod().getName();
+					} else {
+						executeConfig = S2ExecuteConfigUtil.findExecuteConfig("/" + actionPath, action);
 					}
-					logger.debug(String.format("recognize route %s as %s#%s.", path, actionPath, action));
-					req.getRequestDispatcher(forwardPath.toString()).forward(req, res);
-					return;
+					if (executeConfig != null) {
+						StringBuilder forwardPath = new StringBuilder(256);
+						forwardPath.append("/").append(actionPath).append(".do?SAStruts.method=").append(URLEncoderUtil.encode(action));
+						for(String key : params.keySet()) {
+							forwardPath.append("&").append(URLEncoderUtil.encode(key))
+								.append("=").append(URLEncoderUtil.encode(params.getString(key)));
+						}
+						logger.debug(String.format("recognize route %s as %s#%s.", path, actionPath, action));
+						req.getRequestDispatcher(forwardPath.toString()).forward(req, res);
+						return;
+					}
 				}
+			} catch(RoutingException e) {
+				// Fall through routingException
 			}
 		}
 		chain.doFilter(request, response);
