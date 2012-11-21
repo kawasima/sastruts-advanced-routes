@@ -68,6 +68,11 @@ public class AdvancedRoutingFilter implements Filter {
 	 */
 	protected String requestUriHeader;
 
+	/**
+	 * Whether the routing exception fall through.
+	 */
+	protected boolean fallThrough = false;
+
 	public void init(FilterConfig config) throws ServletException {
 		String access = config.getInitParameter("jspDirectAccess");
 		if (StringUtil.isNotBlank(access)) {
@@ -97,6 +102,12 @@ public class AdvancedRoutingFilter implements Filter {
 			UrlRewriter.contextPath = config.getServletContext().getContextPath();
 		}
 		requestUriHeader = config.getInitParameter("requestUriHeader");
+
+		String fallThroughParam = config.getInitParameter("fallThrough");
+		if (StringUtil.isNotBlank(fallThroughParam)) {
+			fallThrough = Boolean.valueOf(fallThroughParam);
+		}
+
 	}
 
 	public void destroy() {
@@ -178,7 +189,8 @@ public class AdvancedRoutingFilter implements Filter {
 					}
 				}
 			} catch(RoutingException e) {
-				// Fall through routingException
+				if (!fallThrough)
+					throw e;
 			}
 		}
 		chain.doFilter(request, response);
