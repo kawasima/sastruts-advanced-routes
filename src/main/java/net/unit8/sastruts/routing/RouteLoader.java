@@ -10,9 +10,10 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.SAXParser;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import net.unit8.sastruts.ARStringUtil;
+
 import org.seasar.framework.util.FileInputStreamUtil;
+import org.seasar.framework.util.InputStreamUtil;
 import org.seasar.framework.util.SAXParserFactoryUtil;
 import org.seasar.framework.util.SAXParserUtil;
 import org.seasar.framework.util.StringUtil;
@@ -43,7 +44,7 @@ public class RouteLoader extends DefaultHandler {
 		try {
 			return load(in);
 		} finally {
-			IOUtils.closeQuietly(in);
+			InputStreamUtil.closeSilently(in);
 		}
 	}
 
@@ -90,8 +91,8 @@ public class RouteLoader extends DefaultHandler {
 			pathScope.push(name);
 			moduleScope.push(name);
 		} else if (qName.equalsIgnoreCase("scope")) {
-			String name = StringUtils.defaultIfEmpty(attributes.getValue("name"), "");
-			String module = StringUtils.defaultIfEmpty(attributes.getValue("module"), "");
+			String name = ARStringUtil.defaultIfEmpty(attributes.getValue("name"), "");
+			String module = ARStringUtil.defaultIfEmpty(attributes.getValue("module"), "");
 			if (StringUtil.isEmpty(name) && StringUtil.isEmpty(module)) {
 				throw new SAXParseException("Scope must have any attributes, name or module.", locator);
 			}
@@ -144,15 +145,15 @@ public class RouteLoader extends DefaultHandler {
 			String optionName = attributes.getQName(i);
 			if (StringUtil.equals(optionName, "path")) {
 				continue;
-			} else if (StringUtils.equals(optionName, "to")) {
-				String[] tokens = StringUtils.split(attributes.getValue(i), "#", 2);
+			} else if (StringUtil.equals(optionName, "to")) {
+				String[] tokens = ARStringUtil.split(attributes.getValue(i), "#", 2);
 				if (tokens.length == 1) {
 					options.$("action", tokens[0]);
 				} else {
 					options.$("controller", tokens[0]).$("action", tokens[1]);
 				}
-			} else if (StringUtils.equals(optionName, "via")){
-				String[] methods = StringUtils.split(attributes.getValue(i), ",");
+			} else if (StringUtil.equals(optionName, "via")){
+				String[] methods = StringUtil.split(attributes.getValue(i), ",");
 				for (String method : methods) {
 					if (Routes.HTTP_METHODS.contains(method.trim().toUpperCase())) {
 						Options conditions = (Options)options.get("conditions");
@@ -179,13 +180,13 @@ public class RouteLoader extends DefaultHandler {
 			options.put("controller", controller);
 		}
 		if (!pathScope.empty()) {
-			String pathPrefix = StringUtils.strip(StringUtils.join(pathScope, '/').replaceAll("/+", "/"), "/");
-			if (!StringUtils.isEmpty(pathPrefix) && !StringUtils.equals(pathPrefix, "/"))
+			String pathPrefix = ARStringUtil.strip(ARStringUtil.join(pathScope, '/').replaceAll("/+", "/"), "/");
+			if (StringUtil.isNotEmpty(pathPrefix) && !StringUtil.equals(pathPrefix, "/"))
 				options.put("pathPrefix", pathPrefix);
 		}
 		if (!moduleScope.empty()) {
-			String namespace = StringUtils.strip(StringUtils.join(moduleScope, '/').replaceAll("/+", "/"), "/");
-			if (!StringUtils.isEmpty(namespace) && !StringUtils.equals(namespace, "/"))
+			String namespace = ARStringUtil.strip(ARStringUtil.join(moduleScope, '/').replaceAll("/+", "/"), "/");
+			if (StringUtil.isNotEmpty(namespace) && !StringUtil.equals(namespace, "/"))
 				options.put("namespace", namespace);
 		}
 		return options;

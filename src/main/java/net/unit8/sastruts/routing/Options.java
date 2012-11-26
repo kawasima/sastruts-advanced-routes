@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import net.unit8.sastruts.ARStringUtil;
+
 import org.seasar.framework.util.IntegerConversionUtil;
 import org.seasar.framework.util.StringConversionUtil;
 import org.seasar.framework.util.StringUtil;
@@ -46,7 +47,7 @@ public class Options extends HashMap<String, Object>{
 			for (Object val : values) {
 				pairs.add(URLEncoderUtil.encode(key) +  "=" + URLEncoderUtil.encode(StringConversionUtil.toString(val)));
 			}
-			return StringUtils.join(pairs, "&");
+			return ARStringUtil.join(pairs, "&");
 		} else {
 			return URLEncoderUtil.encode(key) + "=" + URLEncoderUtil.encode(StringConversionUtil.toString(value));
 		}

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.unit8.sastruts.ARStringUtil;
 import net.unit8.sastruts.routing.segment.ControllerSegment;
 import net.unit8.sastruts.routing.segment.DividerSegment;
 import net.unit8.sastruts.routing.segment.DynamicSegment;
@@ -14,7 +15,6 @@ import net.unit8.sastruts.routing.segment.OptionalFormatSegment;
 import net.unit8.sastruts.routing.segment.PathSegment;
 import net.unit8.sastruts.routing.segment.StaticSegment;
 
-import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 
 public class RouteBuilder {
@@ -30,8 +30,8 @@ public class RouteBuilder {
 
 	public RouteBuilder() {
 		optionalSeparators = Arrays.asList(new String[]{"/"});
-		separatorRegexp = Pattern.compile("[" + RegexpUtil.escape(StringUtils.join(SEPARATORS)) + "]");
-		nonseparatorRegexp = Pattern.compile("\\A([^" + RegexpUtil.escape(StringUtils.join(SEPARATORS))+ "]+)");
+		separatorRegexp = Pattern.compile("[" + RegexpUtil.escape(ARStringUtil.join(SEPARATORS)) + "]");
+		nonseparatorRegexp = Pattern.compile("\\A([^" + RegexpUtil.escape(ARStringUtil.join(SEPARATORS))+ "]+)");
 	}
 
 	public List<Segment> segmentsForRoutePath(String path) {

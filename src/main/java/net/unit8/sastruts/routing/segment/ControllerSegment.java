@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import net.unit8.sastruts.ARStringUtil;
 import net.unit8.sastruts.ControllerUtil;
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.RegexpUtil;
 import net.unit8.sastruts.routing.Routes;
 
-import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 
 public class ControllerSegment extends DynamicSegment {
@@ -27,7 +27,7 @@ public class ControllerSegment extends DynamicSegment {
 		for (String name : Routes.possibleControllers()) {
 			possibleNames.add(RegexpUtil.escape(name));
 		}
-		return "(?i-:(" + StringUtils.join(possibleNames, "|")+ "))";
+		return "(?i-:(" + ARStringUtil.join(possibleNames, "|")+ "))";
 	}
 
 	@Override
@@ -45,12 +45,12 @@ public class ControllerSegment extends DynamicSegment {
 	@Override
 	public String interpolationChunk(Options hash) {
 		String value = hash.getString(getKey());
-		String path = StringUtils.replace(value, ".", "/");
+		String path = StringUtil.replace(value, ".", "/");
 		if (path != null) {
 			if (path.lastIndexOf('/') >= 0)
-				path = StringUtils.substringBeforeLast(path, "/") + "/" + StringUtils.uncapitalize(StringUtils.substringAfterLast(path, "/"));
+				path = ARStringUtil.substringBeforeLast(path, "/") + "/" + StringUtil.decapitalize(ARStringUtil.substringAfterLast(path, "/"));
 			else
-				path = StringUtils.uncapitalize(path);
+				path = StringUtil.decapitalize(path);
 		}
 		return path;
 	}

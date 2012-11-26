@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.unit8.sastruts.ARStringUtil;
 import net.unit8.sastruts.routing.segment.DividerSegment;
 
-import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.struts.util.RequestUtil;
 
@@ -50,7 +50,7 @@ public class Route {
 				elements.add(key + "=" + value);
 			}
 		}
-		return StringUtils.join(elements, "&");
+		return ARStringUtil.join(elements, "&");
 	}
 
 	public List<String> significantKeys() {
@@ -127,7 +127,7 @@ public class Route {
 				elements.add(hash.getUrlEncodedString(key));
 			}
 		}
-		return elements.isEmpty() ? "" : "?" + StringUtils.join(elements, "&");
+		return elements.isEmpty() ? "" : "?" + ARStringUtil.join(elements, "&");
 	}
 
 	private Options getParameterShell() {
@@ -155,7 +155,7 @@ public class Route {
 			int lastIndex = segments.size() - 1;
 			Segment last = segments.get(lastIndex);
 			String path = last.stringStructure(segments.subList(0, lastIndex), hash);
-			if (segments.size() > 1 && last instanceof DividerSegment && StringUtils.equals(last.getValue(), "/")) {
+			if (segments.size() > 1 && last instanceof DividerSegment && StringUtil.equals(last.getValue(), "/")) {
 				path = path + "/";
 			}
 			return appendQueryString(path, hash, extraKeys(options));

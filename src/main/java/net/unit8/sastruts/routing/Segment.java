@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.seasar.framework.util.StringUtil;
 import org.seasar.struts.util.URLEncoderUtil;
 
 public abstract class Segment {
@@ -56,7 +56,7 @@ public abstract class Segment {
 
 	public boolean allOptionalsAvailableCondition(List<Segment> priorSegments, Options hash) {
 		for (Segment segment : priorSegments) {
-			if (!segment.isOptional() && segment.hasKey() && StringUtils.isEmpty(hash.getString(segment.getKey())))
+			if (!segment.isOptional() && segment.hasKey() && StringUtil.isEmpty(hash.getString(segment.getKey())))
 				return  false;
 		}
 		return true;

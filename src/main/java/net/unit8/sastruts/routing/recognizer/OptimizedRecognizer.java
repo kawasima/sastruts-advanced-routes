@@ -2,10 +2,7 @@ package net.unit8.sastruts.routing.recognizer;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.seasar.framework.util.StringUtil;
-import org.seasar.framework.util.tiger.CollectionsUtil;
-
+import net.unit8.sastruts.ARStringUtil;
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.Recognizer;
 import net.unit8.sastruts.routing.RegexpUtil;
@@ -13,13 +10,16 @@ import net.unit8.sastruts.routing.Route;
 import net.unit8.sastruts.routing.RouteBuilder;
 import net.unit8.sastruts.routing.segment.RoutingException;
 
+import org.seasar.framework.util.StringUtil;
+import org.seasar.framework.util.tiger.CollectionsUtil;
+
 public class OptimizedRecognizer extends Recognizer {
 	private SegmentNode tree;
 	private List<Route> routes;
 
 	public String[] toPlainSegments(String str) {
 		str = str.replaceAll("^/+", "").replaceAll("/+$", "");
-		return str.split("\\.[^/]+\\/+|" + "[" + RegexpUtil.escape(StringUtils.join(RouteBuilder.SEPARATORS)) + "]+|\\.[^/]+\\Z");
+		return str.split("\\.[^/]+\\/+|" + "[" + RegexpUtil.escape(ARStringUtil.join(RouteBuilder.SEPARATORS)) + "]+|\\.[^/]+\\Z");
 	}
 
 	public void setRoutes(List<Route> routes) {
@@ -40,7 +40,7 @@ public class OptimizedRecognizer extends Recognizer {
 		for (Route route : routes) {
 			i += 1;
 			SegmentNode node = tree;
-			String[] segments = toPlainSegments(StringUtils.join(route.getSegments(), ""));
+			String[] segments = toPlainSegments(ARStringUtil.join(route.getSegments(), ""));
 			for (String seg : segments) {
 				if (StringUtil.isNotEmpty(seg) && seg.charAt(0) == '?') {
 					seg = ":dynamic";

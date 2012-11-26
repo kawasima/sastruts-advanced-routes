@@ -19,12 +19,11 @@ import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.Routes;
 import net.unit8.sastruts.routing.segment.RoutingException;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
 import org.seasar.framework.exception.NoSuchMethodRuntimeException;
 import org.seasar.framework.log.Logger;
+import org.seasar.framework.util.InputStreamUtil;
 import org.seasar.framework.util.LongConversionUtil;
 import org.seasar.framework.util.MethodUtil;
 import org.seasar.framework.util.StringUtil;
@@ -96,7 +95,7 @@ public class AdvancedRoutingFilter implements Filter {
 			try {
 				Routes.load(routesStream);
 			} finally {
-				IOUtils.closeQuietly(routesStream);
+				InputStreamUtil.closeSilently(routesStream);
 			}
 			lastLoaded = System.currentTimeMillis();
 		}
@@ -288,7 +287,7 @@ public class AdvancedRoutingFilter implements Filter {
 			if (path.charAt(i) == '?' || path.charAt(i) == ';')
 				break;
 		if (i != len)
-			path = StringUtils.substring(path, 0, i);
+			path = path.substring(0, i);
 		return path;
 	}
 

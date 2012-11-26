@@ -3,10 +3,10 @@ package net.unit8.sastruts.routing.detector;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.unit8.sastruts.ARStringUtil;
 import net.unit8.sastruts.ControllerUtil;
 import net.unit8.sastruts.routing.ControllerDetector;
 
-import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
 import org.seasar.framework.convention.NamingConvention;
@@ -17,7 +17,7 @@ import org.seasar.framework.util.StringUtil;
 
 /**
  * HotDeploy/WarmDeploy時用のControllerDetectorです。
- * 
+ *
  * @author kawasima
  * @author growthfield
  *
@@ -36,11 +36,11 @@ public class ClassControllerDetector implements ControllerDetector {
 			final String actionPackageName = rootPackageName.concat(".").concat(actionSubPackageName);
 			ClassHandler handler = new ClassHandler() {
 				public void processClass(String packageName, String shortClassName) {
-					String pkgPath = StringUtils.removeStart(packageName, actionPackageName);
+					String pkgPath = ARStringUtil.removeStart(packageName, actionPackageName);
 					String uncapitalizedShortClassName = ControllerUtil.fromClassNameToPath(shortClassName);
 					String actionPath = StringUtil.trimSuffix(uncapitalizedShortClassName, actionSuffix);
 					StringBuilder sb = new StringBuilder();
-					if (!StringUtils.isEmpty(pkgPath)) {
+					if (StringUtil.isNotEmpty(pkgPath)) {
 						sb.append(pkgPath.substring(1)).append("/");
 					}
 					sb.append(actionPath);

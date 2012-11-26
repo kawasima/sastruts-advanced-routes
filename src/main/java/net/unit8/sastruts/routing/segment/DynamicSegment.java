@@ -4,12 +4,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.unit8.sastruts.ARStringUtil;
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.RegexpUtil;
 import net.unit8.sastruts.routing.RouteBuilder;
 import net.unit8.sastruts.routing.Segment;
 
-import org.apache.commons.lang.StringUtils;
+import org.seasar.framework.util.StringUtil;
 import org.seasar.framework.util.URLUtil;
 
 public class DynamicSegment extends Segment {
@@ -52,7 +53,7 @@ public class DynamicSegment extends Segment {
 	}
 
     public String defaultRegexpChunk() {
-    	return "([^" + RegexpUtil.escape(StringUtils.join(RouteBuilder.SEPARATORS)) + "]+)";
+    	return "([^" + RegexpUtil.escape(ARStringUtil.join(RouteBuilder.SEPARATORS)) + "]+)";
     }
 
     @Override
@@ -101,7 +102,7 @@ public class DynamicSegment extends Segment {
 	@Override
 	public String stringStructure(List<Segment> list, Options hash) {
 		if (isOptional()) {
-			if (StringUtils.equals(hash.getString(getKey()), getDefault())) {
+			if (StringUtil.equals(hash.getString(getKey()), getDefault())) {
 				return continueStringStructure(list, hash);
 			} else {
 				return interpolationStatement(list, hash);

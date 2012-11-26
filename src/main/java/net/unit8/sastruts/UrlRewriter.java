@@ -10,7 +10,6 @@ import javax.servlet.http.HttpSession;
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.Routes;
 
-import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.container.ComponentNotFoundRuntimeException;
 import org.seasar.framework.container.SingletonS2Container;
 import org.seasar.framework.convention.NamingConvention;
@@ -49,7 +48,7 @@ public class UrlRewriter {
 			anchor = "#" + URLEncoderUtil.encode(options.getString("anchor"));
 			options.remove("anchor");
 		}
-		if (StringUtils.isNotEmpty(contextPath))
+		if (StringUtil.isNotEmpty(contextPath))
 			url.append(contextPath);
 		String generated = Routes.generate(options);
 		String path = trailingSlash ? trailingSlash(generated) : generated;
@@ -62,26 +61,26 @@ public class UrlRewriter {
 			// If not use in webapp, ignore the process of encode url.
 		}
 		url.append(path);
-		if (!StringUtils.isEmpty(anchor))
+		if (StringUtil.isNotEmpty(anchor))
 			url.append(anchor);
 		return url.toString();
 	}
 
 	private static String trailingSlash(String url) {
-		int queryStringIdx = StringUtils.indexOf(url, '?');
-		if (queryStringIdx < 0 || StringUtils.length(url) < 1)
+		int queryStringIdx = url.indexOf('?');
+		if (queryStringIdx < 0 || url.length() < 1)
 			return url + "/";
 		if (queryStringIdx != 0 && url.charAt(queryStringIdx - 1) == '/') {
 			return url;
 		} else {
-			return StringUtils.substring(url, 0, queryStringIdx) + "/" + StringUtils.substring(url, queryStringIdx);
+			return url.substring(0, queryStringIdx) + "/" + url.substring(queryStringIdx);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public static Options parseOptionString(String optionString) {
-		String[] urlTokens = StringUtils.split(optionString, "?", 2);
-		String[] actionTokens = StringUtils.split(urlTokens[0], "#", 2);
+		String[] urlTokens = ARStringUtil.split(optionString, "?", 2);
+		String[] actionTokens = ARStringUtil.split(urlTokens[0], "#", 2);
 
 		Options options = new Options();
 		if (actionTokens.length == 1) {
@@ -92,9 +91,9 @@ public class UrlRewriter {
 					actionTokens[1]);
 		}
 		if (urlTokens.length == 2 && StringUtil.isNotEmpty(urlTokens[1])) {
-			String[] paramToken = StringUtils.split(urlTokens[1], "&");
+			String[] paramToken = StringUtil.split(urlTokens[1], "&");
 			for (String keyValuePair : paramToken) {
-				String[] pair = StringUtils.split(keyValuePair, "=", 2);
+				String[] pair = ARStringUtil.split(keyValuePair, "=", 2);
 				if (pair.length == 1) {
 					options.$(pair[0], null);
 				} else if (pair.length == 2) {

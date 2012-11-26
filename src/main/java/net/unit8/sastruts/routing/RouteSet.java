@@ -12,7 +12,6 @@ import java.util.TreeSet;
 import net.unit8.sastruts.routing.recognizer.OptimizedRecognizer;
 import net.unit8.sastruts.routing.segment.RoutingException;
 
-import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.util.StringUtil;
 
 public class RouteSet {
@@ -91,7 +90,7 @@ public class RouteSet {
 			if (!hasAllKey(route, options))
 				continue;
 			String results = route.generate(options, merged);
-			if (StringUtils.isNotEmpty(results)) {
+			if (StringUtil.isNotEmpty(results)) {
 				return results;
 			}
 		}

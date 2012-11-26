@@ -1,14 +1,14 @@
 package net.unit8.sastruts.routing;
 
-import org.apache.commons.lang.StringUtils;
-
 import net.unit8.sastruts.UrlRewriter;
+
+import org.seasar.framework.util.StringUtil;
 
 public class RoutingTestUtil {
 	public static void assertGenerates(String expected, String optionString) {
 		Options options = UrlRewriter.parseOptionString(optionString);
 		String actual = Routes.generate(options);
-		if (!StringUtils.equals(expected, actual)) {
+		if (!StringUtil.equals(expected, actual)) {
 			fail(format(null, expected, actual));
 		}
 	}
