@@ -11,34 +11,37 @@ import org.seasar.framework.unit.annotation.RegisterNamingConvention;
 import org.seasar.framework.util.ResourceUtil;
 import org.seasar.struts.util.RequestUtil;
 
-
 @RunWith(Seasar2.class)
 @RegisterNamingConvention(false)
 public class RoutingTestUtilTest {
 	private static final int ITER = 100;
+
 	@Test
 	public void test() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/testutil.xml"));
 
 		assertRecognizes("Previews#news", "/news/preview");
 		long t1 = System.currentTimeMillis();
-		for (int i=0; i<ITER; i++) {
-			((MockHttpServletRequest)RequestUtil.getRequest()).setMethod("GET");
+		for (int i = 0; i < ITER; i++) {
+			((MockHttpServletRequest) RequestUtil.getRequest())
+					.setMethod("GET");
 			assertRecognizes("Search#index?id=8", "/projects/8/search");
 		}
 		long t2 = System.currentTimeMillis();
 		System.out.println("recognize " + ITER + "times: " + (t2 - t1) + "ms");
 
 		assertGenerates("/uploads", "Attachments#upload");
-		assertGenerates("/projects/5/issues/calendar", "Calendars#show?projectId=5");
+		assertGenerates("/projects/5/issues/calendar",
+				"Calendars#show?projectId=5");
 		assertGenerates("/issues/calendar", "Calendars#show");
 	}
 
 	@Test
 	public void testComplexRequirement() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/testutil.xml"));
-		((MockHttpServletRequest)RequestUtil.getRequest()).setMethod("GET");
-		assertRecognizes("Repositories#show?id=8&rev=123&repositoryId=10&ext=txt&path=a/b/c",
+		((MockHttpServletRequest) RequestUtil.getRequest()).setMethod("GET");
+		assertRecognizes(
+				"Repositories#show?id=8&rev=123&repositoryId=10&ext=txt&path=a/b/c",
 				"/projects/8/repository/10/revisions/123/show/a/b/c.txt");
 	}
 }

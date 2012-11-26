@@ -2,6 +2,7 @@ package net.unit8.sastruts.routing;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -36,21 +37,26 @@ public class RouteLoader extends DefaultHandler {
 		this.routes = new ArrayList<Route>();
 		this.builder = builder;
 	}
+
 	public List<Route> load(File config) {
 		FileInputStream in = FileInputStreamUtil.create(config);
 		try {
-			SAXParser parser = SAXParserFactoryUtil.newSAXParser();
-			SAXParserUtil.parse(parser, new InputSource(in), this);
+			return load(in);
 		} finally {
 			IOUtils.closeQuietly(in);
 		}
+	}
+
+	public List<Route> load(InputStream stream) {
+		SAXParser parser = SAXParserFactoryUtil.newSAXParser();
+		SAXParserUtil.parse(parser, new InputSource(stream), this);
 		return routes;
 	}
 
 	@Override
-    public void setDocumentLocator(final Locator locator) {
-        this.locator = locator;
-    }
+	public void setDocumentLocator(final Locator locator) {
+		this.locator = locator;
+	}
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {

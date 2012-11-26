@@ -1,6 +1,7 @@
 package net.unit8.sastruts.routing;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,10 @@ public class Routes {
 
 	public static Options recognizePath(String path) {
 		return getRouteSet().recognizePath(path);
+	}
+
+	public static void load(InputStream stream) {
+		getRouteSet().loadStream(stream);
 	}
 
 	public static void load(File config) {

@@ -19,7 +19,8 @@ public class ViaTest {
 	public void testGet() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/via.xml"));
 		System.out.println(Routes.getRouteSet().toString());
-		MockHttpServletRequest request = ((MockHttpServletRequest)RequestUtil.getRequest());
+		MockHttpServletRequest request = ((MockHttpServletRequest) RequestUtil
+				.getRequest());
 		request.setMethod("GET");
 		Options options = Routes.recognizePath("/methods/");
 		System.out.println(options);
@@ -31,7 +32,8 @@ public class ViaTest {
 	public void testPost() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/via.xml"));
 		System.out.println(Routes.getRouteSet().toString());
-		MockHttpServletRequest request = ((MockHttpServletRequest)RequestUtil.getRequest());
+		MockHttpServletRequest request = ((MockHttpServletRequest) RequestUtil
+				.getRequest());
 		request.setMethod("POST");
 		Options options = Routes.recognizePath("/methods/");
 		System.out.println(options);
@@ -43,7 +45,8 @@ public class ViaTest {
 	public void testPut() throws RoutingException {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/via.xml"));
 		System.out.println(Routes.getRouteSet().toString());
-		MockHttpServletRequest request = ((MockHttpServletRequest)RequestUtil.getRequest());
+		MockHttpServletRequest request = ((MockHttpServletRequest) RequestUtil
+				.getRequest());
 		request.setMethod("PUT");
 		Routes.recognizePath("/methods/");
 	}

@@ -12,8 +12,11 @@ public class DefaultTest {
 	@Test
 	public void test() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/default.xml"));
-		RoutingTestUtil.assertRecognizes("Photos#show?format=jpg&id=100", "/photos");
-		RoutingTestUtil.assertRecognizes("Photos#show?format=jpg&id=5", "/photos/5");
-		RoutingTestUtil.assertRecognizes("Photos#show?format=png&id=5", "/photos/5.png");
+		RoutingTestUtil.assertRecognizes("Photos#show?format=jpg&id=100",
+				"/photos");
+		RoutingTestUtil.assertRecognizes("Photos#show?format=jpg&id=5",
+				"/photos/5");
+		RoutingTestUtil.assertRecognizes("Photos#show?format=png&id=5",
+				"/photos/5.png");
 	}
 }

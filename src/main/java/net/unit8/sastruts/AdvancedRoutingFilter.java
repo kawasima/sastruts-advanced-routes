@@ -2,6 +2,7 @@ package net.unit8.sastruts;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -16,6 +17,7 @@ import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.Routes;
 import net.unit8.sastruts.routing.segment.RoutingException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
@@ -81,8 +83,16 @@ public class AdvancedRoutingFilter implements Filter {
 
 		String routesPath = config.getInitParameter("routes");
 		if (StringUtil.isNotEmpty(routesPath)) {
-			routes = new File(config.getServletContext().getRealPath(routesPath));
-			Routes.load(routes);
+			String realRoutesPath = config.getServletContext().getRealPath(routesPath);
+			if (realRoutesPath != null) {
+				routes = new File(realRoutesPath);
+			}
+			InputStream routesStream = config.getServletContext().getResourceAsStream(routesPath);
+			try {
+				Routes.load(routesStream);
+			} finally {
+				IOUtils.closeQuietly(routesStream);
+			}
 			lastLoaded = System.currentTimeMillis();
 		}
 
@@ -114,7 +124,7 @@ public class AdvancedRoutingFilter implements Filter {
 	}
 
 	private void reloadRoutes() {
-		if (loading) {
+		if (loading || routesIsNotFile()) {
 			return;
 		}
 		if (lastLoaded < 0 || checkInterval >= 0 && System.currentTimeMillis() > lastLoaded + checkInterval * 1000) {
@@ -269,5 +279,9 @@ public class AdvancedRoutingFilter implements Filter {
 		if (i != len)
 			path = StringUtils.substring(path, 0, i);
 		return path;
+	}
+
+	private boolean routesIsNotFile() {
+		return routes == null;
 	}
 }

@@ -17,12 +17,14 @@ public class AdvancedRoutingFilterTest {
 	public void testGetOriginalPath() {
 		AdvancedRoutingFilter filter = new AdvancedRoutingFilter();
 		MockServletContext context = new MockServletContextImpl("/");
-		MockHttpServletRequest request = new MockHttpServletRequestImpl(context, "/hoge;jsession_id=huge?query=123");
+		MockHttpServletRequest request = new MockHttpServletRequestImpl(
+				context, "/hoge;jsession_id=huge?query=123");
 		String path = filter.getOriginalPath(request);
 		assertThat(path, is("/hoge"));
 
 		filter.requestUriHeader = "X-Request-Uri";
-		request.addHeader(filter.requestUriHeader, "/fuga;jsession_id=aisdhfasud?a=1&a=2");
+		request.addHeader(filter.requestUriHeader,
+				"/fuga;jsession_id=aisdhfasud?a=1&a=2");
 		path = filter.getOriginalPath(request);
 		assertThat(path, is("/fuga"));
 	}

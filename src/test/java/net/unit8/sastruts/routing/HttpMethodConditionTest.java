@@ -18,7 +18,8 @@ public class HttpMethodConditionTest {
 	public void testGet() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/methods.xml"));
 		System.out.println(Routes.getRouteSet().toString());
-		MockHttpServletRequest request = ((MockHttpServletRequest)RequestUtil.getRequest());
+		MockHttpServletRequest request = ((MockHttpServletRequest) RequestUtil
+				.getRequest());
 		request.setMethod("GET");
 		Options options = Routes.recognizePath("/methods/");
 		System.out.println(options);

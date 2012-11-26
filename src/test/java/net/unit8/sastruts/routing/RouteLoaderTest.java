@@ -1,12 +1,12 @@
 package net.unit8.sastruts.routing;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 
-import net.unit8.sastruts.routing.Options;
-import net.unit8.sastruts.routing.RouteSet;
 import net.unit8.sastruts.routing.segment.RoutingException;
 
 import org.junit.Test;

@@ -1,9 +1,9 @@
 package net.unit8.sastruts.routing;
 
+import static net.unit8.sastruts.routing.RoutingTestUtil.assertGenerates;
+import static net.unit8.sastruts.routing.RoutingTestUtil.assertRecognizes;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static net.unit8.sastruts.routing.RoutingTestUtil.*;
-
+import static org.junit.Assert.assertThat;
 import net.unit8.sastruts.routing.segment.RoutingException;
 
 import org.junit.Test;
@@ -28,10 +28,10 @@ public class RequirementsTest {
 		assertThat(options.getString("month"), is("11"));
 	}
 
-	@Test(expected=RoutingException.class)
+	@Test(expected = RoutingException.class)
 	public void testNotMatch() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/requirements.xml"));
-		Routes.recognizePath("/posts/20XX/11");  // throw RoutingException
+		Routes.recognizePath("/posts/20XX/11"); // throw RoutingException
 	}
 
 	@Test
@@ -43,10 +43,12 @@ public class RequirementsTest {
 		assertRecognizes("Images#size?size=1024", "/images/1024");
 		assertRecognizes("Images#size?size=sacd", "/images/sacd");
 	}
+
 	@Test
 	public void generate() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/requirements.xml"));
-		String path = Routes.generate(new Options().$("controller", "Posts").$("action", "index").$("year", "2012").$("month","11"));
+		String path = Routes.generate(new Options().$("controller", "Posts")
+				.$("action", "index").$("year", "2012").$("month", "11"));
 		assertThat(path, is("/posts/2012/11"));
 	}
 
@@ -55,6 +57,7 @@ public class RequirementsTest {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/requirements.xml"));
 		assertGenerates("/area_01/zip_03", "sample.Hoge#index?area=01&zip=03");
 		assertGenerates("/area_01/addr_04", "sample.Hoge#index?area=01&addr=04");
-		assertGenerates("/area_01/addr_04?zip=03", "sample.Hoge#index?area=01&addr=04&zip=03");
+		assertGenerates("/area_01/addr_04?zip=03",
+				"sample.Hoge#index?area=01&addr=04&zip=03");
 	}
 }

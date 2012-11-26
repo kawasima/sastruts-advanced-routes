@@ -1,6 +1,7 @@
 package net.unit8.sastruts.routing;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +45,13 @@ public class RouteSet {
 	public void load() {
 		clear();
 		loadRoutes();
+	}
+
+	public void loadStream(InputStream stream) {
+		clear();
+		List<Route> newRoutes = new RouteLoader(builder).load(stream);
+		routes = newRoutes;
+		recognizer.setRoutes(routes);
 	}
 
 	private void loadRoutes() {

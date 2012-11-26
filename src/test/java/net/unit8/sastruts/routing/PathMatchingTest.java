@@ -2,8 +2,6 @@ package net.unit8.sastruts.routing;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import net.unit8.sastruts.routing.Options;
-import net.unit8.sastruts.routing.Routes;
 
 import org.junit.After;
 import org.junit.Test;
@@ -34,7 +32,8 @@ public class PathMatchingTest {
 	public void pathMiddle() {
 		Routes.load(ResourceUtil.getResourceAsFile("routes/paths.xml"));
 		System.out.println(Routes.getRouteSet().toString());
-		Options options = Routes.recognizePath("/books/some/section/last-words-a-memoir");
+		Options options = Routes
+				.recognizePath("/books/some/section/last-words-a-memoir");
 		System.out.println(options);
 		assertThat(options.getString("section"), is("some/section"));
 		assertThat(options.getString("title"), is("last-words-a-memoir"));

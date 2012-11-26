@@ -18,6 +18,7 @@ public class OptionsTest {
 		List<Object> list = options.getList("hoge");
 		assertThat(list.isEmpty(), is(true));
 	}
+
 	@Test
 	public void getListByArray() {
 		Options options = new Options();
@@ -27,6 +28,7 @@ public class OptionsTest {
 		assertThat((String) list.get(0), equalTo("foo"));
 		assertThat((String) list.get(1), equalTo("bar"));
 	}
+
 	@Test
 	public void getListByString() {
 		Options options = new Options();
@@ -35,6 +37,7 @@ public class OptionsTest {
 		assertThat(list.size(), equalTo(1));
 		assertThat((String) list.get(0), equalTo("moga"));
 	}
+
 	@Test
 	public void getListByList() {
 		Options options = new Options();
@@ -44,6 +47,7 @@ public class OptionsTest {
 		assertThat((String) list.get(0), equalTo("foo"));
 		assertThat((String) list.get(1), equalTo("bar"));
 	}
+
 	@Test
 	public void getListByCollection() {
 		Options options = new Options();
