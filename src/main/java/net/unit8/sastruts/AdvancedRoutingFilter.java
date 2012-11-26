@@ -3,10 +3,12 @@ package net.unit8.sastruts;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -21,9 +23,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
+import org.seasar.framework.exception.NoSuchMethodRuntimeException;
 import org.seasar.framework.log.Logger;
 import org.seasar.framework.util.LongConversionUtil;
+import org.seasar.framework.util.MethodUtil;
 import org.seasar.framework.util.StringUtil;
+import org.seasar.framework.util.tiger.ReflectionUtil;
 import org.seasar.struts.config.S2ExecuteConfig;
 import org.seasar.struts.util.RequestUtil;
 import org.seasar.struts.util.S2ExecuteConfigUtil;
@@ -109,7 +114,13 @@ public class AdvancedRoutingFilter implements Filter {
 			contextSensitive = Boolean.valueOf(contextSensitiveParam);
 		}
 		if (contextSensitive) {
-			UrlRewriter.contextPath = config.getServletContext().getContextPath();
+			try {
+				Method getServletContext = ReflectionUtil.getMethod(ServletContext.class, "getServletContext");
+				UrlRewriter.contextPath = (String)MethodUtil
+						.invoke(getServletContext, config.getServletContext(), null);
+			} catch (NoSuchMethodRuntimeException e) {
+				UrlRewriter.contextPath = config.getServletContext().getServletContextName();
+			}
 		}
 		requestUriHeader = config.getInitParameter("requestUriHeader");
 
