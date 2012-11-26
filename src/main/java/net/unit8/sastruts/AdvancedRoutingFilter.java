@@ -95,7 +95,7 @@ public class AdvancedRoutingFilter implements Filter {
 			try {
 				Routes.load(routesStream);
 			} finally {
-				InputStreamUtil.closeSilently(routesStream);
+				InputStreamUtil.close(routesStream);
 			}
 			lastLoaded = System.currentTimeMillis();
 		}

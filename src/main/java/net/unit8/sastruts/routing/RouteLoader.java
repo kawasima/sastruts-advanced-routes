@@ -44,7 +44,7 @@ public class RouteLoader extends DefaultHandler {
 		try {
 			return load(in);
 		} finally {
-			InputStreamUtil.closeSilently(in);
+			InputStreamUtil.close(in);
 		}
 	}
 
