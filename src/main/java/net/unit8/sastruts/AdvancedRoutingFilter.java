@@ -114,7 +114,7 @@ public class AdvancedRoutingFilter implements Filter {
 		}
 		if (contextSensitive) {
 			try {
-				Method getServletContext = ReflectionUtil.getMethod(ServletContext.class, "getServletContext");
+				Method getServletContext = ReflectionUtil.getMethod(ServletContext.class, "getContextPath");
 				UrlRewriter.contextPath = (String)MethodUtil
 						.invoke(getServletContext, config.getServletContext(), null);
 			} catch (NoSuchMethodRuntimeException e) {
