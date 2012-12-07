@@ -1,7 +1,15 @@
 package net.unit8.sastruts.routing;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,5 +76,61 @@ public class RouteSetTest {
 		params = routeSet.recognizePath("/admin/proof");
 		assertThat(params.getString("controller"), is("admin.Proof"));
 		assertThat(params.getString("action"), is("index"));
+	}
+	@Test
+	public void recognizeMultiThread() {
+		final RouteSet routeSet = new RouteSet();
+		routeSet.addRoute("/foo/:id", new Options().$("controller", "foo"));
+		routeSet.addRoute("/bar/:id", new Options().$("controller", "bar"));
+		//
+		int testCount = 1000;
+		ExecutorService exec = Executors.newCachedThreadPool();
+		List<RoutingTask> tasks = new ArrayList<RoutingTask>(testCount);
+		for(int i=0; i < testCount; i++) {
+			tasks.add(new RoutingTask(i, i%2 == 0 ? "foo" : "bar", routeSet));
+		}
+		try {
+			List<Future<RoutingTaskResult>> result = exec.invokeAll(tasks);
+			for(Future<RoutingTaskResult> actual : result) {
+				assertTrue(actual.isDone());
+				RoutingTaskResult taskResult = actual.get();
+				assertTrue(taskResult.message, taskResult.success);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+			fail();
+		} finally {
+			exec.shutdown();
+		}
+	}
+
+	private static final class RoutingTaskResult {
+		public boolean success;
+		public String message = "";
+	}
+	private static final class RoutingTask implements Callable<RoutingTaskResult> {
+		
+		private final String id;
+		private final String controller;
+		private final String path;
+		private final RouteSet routeset;
+		
+		public RoutingTask(int id, String controller, RouteSet routeset) {
+			this.id = Integer.toString(id);
+			this.controller = controller;
+			this.routeset = routeset;
+			this.path = String.format("/%s/%s", this.controller, this.id);
+		}
+
+		public RoutingTaskResult call() throws Exception {
+			// TODO 自動生成されたメソッド・スタブ
+			RoutingTaskResult result = new RoutingTaskResult();
+			final Options options = routeset.recognizePath(path);
+			result.success = id.equals(options.getString("id")) && controller.equals(options.getString("controller"));
+			if (!result.success) {
+				result.message = String.format("Failed. id:[%s], controller:[%s], path:[%s], recognizePath:[%s]", id, controller, path, options);
+			}
+			return result;
+		}
 	}
 }

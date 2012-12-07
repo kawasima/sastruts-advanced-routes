@@ -98,7 +98,7 @@ public class Route {
 		Options params = null;
 		if (match.find()) {
 			int nextCapture = 1;
-			params = getParameterShell();
+			params = new Options(getParameterShell());
 			for (Segment segment : segments) {
 				segment.matchExtraction(params, match, nextCapture);
 				nextCapture += segment.numberOfCaptures();
@@ -132,12 +132,13 @@ public class Route {
 
 	private Options getParameterShell() {
 		if (parameterShell == null) {
-			parameterShell = new Options();
+			Options options = new Options();
 			for (Map.Entry<String, Object> e : requirements.entrySet()) {
 				if (! (e.getValue() instanceof Pattern)) {
-					parameterShell.put(e.getKey(), e.getValue());
+					options.put(e.getKey(), e.getValue());
 				}
 			}
+			parameterShell = options;
 		}
 		return parameterShell;
 
