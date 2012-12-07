@@ -123,7 +123,6 @@ public class RouteSetTest {
 		}
 
 		public RoutingTaskResult call() throws Exception {
-			// TODO 自動生成されたメソッド・スタブ
 			RoutingTaskResult result = new RoutingTaskResult();
 			final Options options = routeset.recognizePath(path);
 			result.success = id.equals(options.getString("id")) && controller.equals(options.getString("controller"));
