@@ -50,6 +50,7 @@ public class UrlRewriter {
 		}
 		if (!options.getBoolean("skip_context_path") && StringUtil.isNotEmpty(contextPath)) {
             url.append(contextPath);
+            options.remove("skip_context_path");
         }
 		String generated = Routes.generate(options);
 		String path = trailingSlash ? trailingSlash(generated) : generated;
