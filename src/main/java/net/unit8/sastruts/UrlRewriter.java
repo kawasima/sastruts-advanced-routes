@@ -48,8 +48,10 @@ public class UrlRewriter {
 			anchor = "#" + URLEncoderUtil.encode(options.getString("anchor"));
 			options.remove("anchor");
 		}
-		if (StringUtil.isNotEmpty(contextPath))
-			url.append(contextPath);
+		if (!options.getBoolean("skip_context_path") && StringUtil.isNotEmpty(contextPath)) {
+            url.append(contextPath);
+            options.remove("skip_context_path");
+        }
 		String generated = Routes.generate(options);
 		String path = trailingSlash ? trailingSlash(generated) : generated;
 		try {

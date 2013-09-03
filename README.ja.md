@@ -195,10 +195,6 @@ web.xmlにて、次のようにroutingfilterを設定されているところを
 			<param-value>false</param-value>
 		</init-param>
 		<init-param>
-			<param-name>jspDirectAccess</param-name>
-			<param-value>false</param-value>
-		</init-param>
-		<init-param>
 			<param-name>routes</param-name>
 			<param-value>/WEB-INF/routes.xml</param-value>
 		</init-param>
