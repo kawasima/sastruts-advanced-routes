@@ -1,6 +1,7 @@
 package net.unit8.sastruts;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 import net.unit8.sastruts.routing.Options;
 import net.unit8.sastruts.routing.Routes;
@@ -16,6 +17,8 @@ import org.seasar.framework.util.tiger.ReflectionUtil;
 import org.seasar.struts.config.S2ExecuteConfig;
 import org.seasar.struts.util.S2ExecuteConfigUtil;
 
+import java.util.List;
+
 @RunWith(Seasar2.class)
 @RegisterNamingConvention(false)
 public class UrlRewriterTest {
@@ -26,6 +29,20 @@ public class UrlRewriterTest {
 		assertThat(options.getString("controller"), is("User"));
 		assertThat(options.getString("action"), is("list"));
 		assertThat(options.getString("id"), is("1"));
+	}
+
+	@Test
+	public void testPluralParameters() {
+		Options options = UrlRewriter.parseOptionString("User#search?cond=hoge&cond=fuga&cond=huge");
+		assertThat(options.getString("controller"), is("User"));
+		assertThat(options.getString("action"), is("search"));
+		Object obj = options.get("cond");
+		assertThat(obj, instanceOf(List.class));
+		List<String> list = (List<String>)obj;
+		assertThat(list.size(), is(3));
+		assertThat(list.get(0), is("hoge"));
+		assertThat(list.get(1), is("fuga"));
+		assertThat(list.get(2), is("huge"));
 	}
 
 	@Test

@@ -107,6 +107,7 @@ public class UrlRewriter {
 					} else {
 						List<String> values = new ArrayList<String>();
 						values.add(StringConversionUtil.toString(value));
+						values.add(pair[1]);
 						options.$(pair[0], values);
 					}
 				}
