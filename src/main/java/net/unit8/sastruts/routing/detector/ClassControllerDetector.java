@@ -41,7 +41,7 @@ public class ClassControllerDetector implements ControllerDetector {
 					String actionPath = StringUtil.trimSuffix(uncapitalizedShortClassName, actionSuffix);
 					StringBuilder sb = new StringBuilder();
 					if (StringUtil.isNotEmpty(pkgPath)) {
-						sb.append(pkgPath.substring(1)).append("/");
+						sb.append(StringUtil.replace(pkgPath.substring(1), ".", "/")).append("/");
 					}
 					sb.append(actionPath);
 					controllers.add(sb.toString());

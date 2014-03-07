@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.annotation.RegisterNamingConvention;
+import org.seasar.framework.unit.annotation.WarmDeploy;
 import org.seasar.framework.util.ResourceUtil;
 
 @RunWith(Seasar2.class)
@@ -38,5 +39,12 @@ public class PathMatchingTest {
 		assertThat(options.getString("section"), is("some/section"));
 		assertThat(options.getString("title"), is("last-words-a-memoir"));
 	}
+
+    @Test
+    public void nestedControler() {
+		Routes.load(ResourceUtil.getResourceAsFile("routes/paths.xml"));
+		RoutingTestUtil.assertRecognizes("admin.nested.Foo#index",
+				"/admin/nested/foo");
+    }
 
 }
