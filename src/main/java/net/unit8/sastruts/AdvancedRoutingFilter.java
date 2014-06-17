@@ -192,7 +192,9 @@ public class AdvancedRoutingFilter implements Filter {
 					S2ExecuteConfig executeConfig;
 					if (StringUtil.equals(action, "index")) {
 						executeConfig = S2ExecuteConfigUtil.findExecuteConfig("/" + actionPath, req);
-						action = executeConfig.getMethod().getName();
+						if (executeConfig != null) {
+							action = executeConfig.getMethod().getName();
+						}
 					} else {
 						executeConfig = S2ExecuteConfigUtil.findExecuteConfig("/" + actionPath, action);
 					}
