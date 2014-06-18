@@ -42,7 +42,7 @@ public class OptimizedRecognizer extends Recognizer {
 			SegmentNode node = tree;
 			String[] segments = toPlainSegments(ARStringUtil.join(route.getSegments(), ""));
 			for (String seg : segments) {
-				if (StringUtil.isNotEmpty(seg) && seg.charAt(0) == '?') {
+				if (StringUtil.isNotEmpty(seg) && seg.charAt(0) == ':') {
 					seg = ":dynamic";
 				}
 				if (node.isEmpty() || !StringUtil.equals(node.lastChild().getLabel(), seg))
